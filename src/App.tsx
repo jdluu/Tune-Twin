@@ -572,7 +572,7 @@ export function App() {
 
               {/* Links */}
               <Link 
-                href="https://github.com/topics/tunetwin" 
+                href="https://github.com/jdluu/Tune-Twin" 
                 target="_blank" 
                 rel="noopener"
                 color="text.secondary" 
