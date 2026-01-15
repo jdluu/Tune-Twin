@@ -214,7 +214,7 @@ export function App() {
                   </Typography>
                 </Box>
                 <Box>
-                    <IconButton onClick={toggleColorMode} color="inherit">
+                    <IconButton onClick={toggleColorMode} color="inherit" aria-label="toggle light/dark mode">
                         {theme.palette.mode === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </IconButton>
                 </Box>
@@ -268,7 +268,8 @@ export function App() {
                   onChange={(e) => setUrl(e.target.value)}
                   InputProps={{ 
                       disableUnderline: true, 
-                      sx: { fontSize: '1.05rem' } 
+                      sx: { fontSize: '1.05rem' },
+                      "aria-label": "YouTube Music Playlist URL"
                   }}
                   required
                 />
@@ -378,6 +379,8 @@ export function App() {
                                         component="a" 
                                         href={`https://music.youtube.com/watch?v=${item.videoId || item.id}`} 
                                         target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={`Play ${item.title?.runs?.[0]?.text || item.title?.text || "song"}`}
                                         sx={{ 
                                             color: 'text.primary',
                                             '&:hover': { color: 'primary.main' }
@@ -396,7 +399,8 @@ export function App() {
                               }}>
                                 <img 
                                   src={item.thumbnail?.thumbnails?.[0]?.url} 
-                                  alt="" 
+                                  alt={item.title?.runs?.[0]?.text || item.title?.text || "Album Art"}
+                                  loading="lazy"
                                   style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} 
                                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                                 />
