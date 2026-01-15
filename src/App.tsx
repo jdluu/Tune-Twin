@@ -395,13 +395,28 @@ export function App() {
                                 {(index + 1).toString().padStart(2, '0')}
                               </Typography>
                               <ListItemText 
-                                primary={item.title || "Unknown Track"}
-                                secondary={item.artist || "Unknown Artist"}
-                                primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
-                                secondaryTypographyProps={{ noWrap: true, variant: 'caption' }}
-                              />
-                            </ListItem>
-                          ))}
+                              primary={
+                                <Link 
+                                  href={`https://music.youtube.com/watch?v=${item.id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  color="inherit"
+                                  underline="hover"
+                                  sx={{ 
+                                    fontWeight: 600, 
+                                    display: 'block',
+                                    '&:hover': { color: 'primary.main' }
+                                  }}
+                                >
+                                  {item.title || "Unknown Track"}
+                                </Link>
+                              }
+                              secondary={item.artist || "Unknown Artist"}
+                              primaryTypographyProps={{ component: 'div' }}
+                              secondaryTypographyProps={{ noWrap: true, variant: 'caption' }}
+                            />
+                          </ListItem>
+                        ))}
                         </List>
                     </CardContent>
                   </Card>
@@ -461,9 +476,25 @@ export function App() {
                                 />
                             </Box>
                               <ListItemText 
-                                primary={item.title || "Unknown Discovery"}
+                                primary={
+                                  <Link 
+                                    href={`https://music.youtube.com/watch?v=${item.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    color="inherit"
+                                    underline="hover"
+                                    sx={{ 
+                                      fontWeight: 600, 
+                                      display: 'block',
+                                      cursor: 'pointer',
+                                      '&:hover': { color: 'primary.main' }
+                                    }}
+                                  >
+                                    {item.title || "Unknown Discovery"}
+                                  </Link>
+                                }
                                 secondary={item.artist || "TuneTwin Suggestion"}
-                                primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
+                                primaryTypographyProps={{ component: 'div' }}
                                 secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: 'primary.main' }}
                               />
                             </ListItem>

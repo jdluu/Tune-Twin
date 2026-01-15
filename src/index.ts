@@ -40,14 +40,24 @@ const server = serve({
               return "";
           }
 
-          const sanitizeTrack = (item: any) => ({
-              id: item.videoId || item.id,
-              title: getText(item.title),
-              artist: getText(item.subtitle) || getText(item.short_byline) || getText(item.long_byline),
-              thumbnail: getThumbnail(item),
-              duration: getText(item.length) || getText(item.duration),
-              album: getText(item.album)
-          });
+          const sanitizeTrack = (item: any) => {
+              // Extract Artist
+              let artist = "";
+              if (item.artists && Array.isArray(item.artists)) {
+                  artist = item.artists.map((a: any) => a.name).join(", ");
+              } else {
+                  artist = getText(item.subtitle) || getText(item.short_byline) || getText(item.long_byline) || getText(item.author);
+              }
+
+              return {
+                  id: item.videoId || item.id,
+                  title: getText(item.title),
+                  artist: artist,
+                  thumbnail: getThumbnail(item),
+                  duration: getText(item.length) || getText(item.duration),
+                  album: getText(item.album)
+              };
+          };
 
           // Filter for items that look like tracks (have an ID)
           const validItems = playlist.items.filter((item: any) => item.id || item.videoId);
