@@ -243,9 +243,6 @@ export function App() {
     }
   };
 
-  const getTrackItems = (recData: any) => {
-    return recData?.items || recData?.contents || [];
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -398,35 +395,35 @@ export function App() {
                                 {(index + 1).toString().padStart(2, '0')}
                               </Typography>
                               <ListItemText 
-                                primary={item.title?.runs?.[0]?.text || item.title?.text || "Unknown Track"}
-                                secondary={item.subtitle?.runs?.[0]?.text || item.subtitle?.text || "Unknown Artist"}
+                                primary={item.title || "Unknown Track"}
+                                secondary={item.artist || "Unknown Artist"}
                                 primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
                                 secondaryTypographyProps={{ noWrap: true, variant: 'caption' }}
                               />
                             </ListItem>
                           ))}
                         </List>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                    </CardContent>
+                  </Card>
+                </Grid>
 
-                  {/* Recommendations Column */}
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Card elevation={0} sx={{ 
-                        bgcolor: mode === 'dark' ? '#1a0000' : '#fff5f5', // Subtle red tint
-                        border: '1px solid',
-                        borderColor: 'primary.main',
-                    }}>
-                      <CardHeader 
-                        title="Twin Matches" 
-                        subheader="Algorithmic suggestions"
-                        avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><EqualizerIcon /></Avatar>}
-                        titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
-                      />
+                {/* Recommendations Column */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card elevation={0} sx={{ 
+                      bgcolor: mode === 'dark' ? '#1a0000' : '#fff5f5', // Subtle red tint
+                      border: '1px solid',
+                      borderColor: 'primary.main',
+                  }}>
+                    <CardHeader 
+                      title="Twin Matches" 
+                      subheader="Algorithmic suggestions"
+                      avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><EqualizerIcon /></Avatar>}
+                      titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
+                    />
                       <Divider sx={{ borderColor: 'rgba(255,0,0,0.1)' }} />
                       <CardContent sx={{ p: 0 }}>
                         <List sx={{ maxHeight: 600, overflow: 'auto' }}>
-                          {getTrackItems(data.recommendations).map((item: any, index: number) => (
+                          {data.recommendations.map((item: any, index: number) => (
                             <ListItem 
                                 key={item.id || index} 
                                 divider 
@@ -435,10 +432,10 @@ export function App() {
                                     <IconButton 
                                         edge="end" 
                                         component="a" 
-                                        href={`https://music.youtube.com/watch?v=${item.videoId || item.id}`} 
+                                        href={`https://music.youtube.com/watch?v=${item.id}`} 
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        aria-label={`Play ${item.title?.runs?.[0]?.text || item.title?.text || "song"}`}
+                                        aria-label={`Play ${item.title || "song"}`}
                                         sx={{ 
                                             color: 'text.primary',
                                             '&:hover': { color: 'primary.main' }
@@ -456,22 +453,22 @@ export function App() {
                                 minWidth: 40
                               }}>
                                 <img 
-                                  src={item.thumbnail?.thumbnails?.[0]?.url} 
-                                  alt={item.title?.runs?.[0]?.text || item.title?.text || "Album Art"}
+                                  src={item.thumbnail} 
+                                  alt={item.title || "Album Art"}
                                   loading="lazy"
                                   style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} 
                                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                                 />
                             </Box>
                               <ListItemText 
-                                primary={item.title?.runs?.[0]?.text || item.title?.text || item.title?.toString() || "Unknown Discovery"}
-                                secondary={item.short_byline?.runs?.[0]?.text || item.subtitle?.runs?.[0]?.text || "TuneTwin Suggestion"}
+                                primary={item.title || "Unknown Discovery"}
+                                secondary={item.artist || "TuneTwin Suggestion"}
                                 primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
                                 secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: 'primary.main' }}
                               />
                             </ListItem>
                           ))}
-                          {getTrackItems(data.recommendations).length === 0 && (
+                          {data.recommendations.length === 0 && (
                               <Box sx={{ py: 10, textAlign: 'center', opacity: 0.5 }}>
                                   <Typography variant="body2">No recommendations available.</Typography>
                               </Box>
