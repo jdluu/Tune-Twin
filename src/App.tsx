@@ -111,26 +111,51 @@ export function App() {
       }
     },
     typography: {
-      fontFamily: '"Roboto", "Arial", sans-serif',
+      fontFamily: '"Inter", "Roboto", "Arial", sans-serif',
+      h3: {
+        fontSize: 'var(--step-4)',
+        fontWeight: 900,
+        letterSpacing: '-0.02em',
+      },
       h4: {
+        fontSize: 'var(--step-3)',
         fontWeight: 700,
         letterSpacing: '-0.02em',
       },
+      h5: { 
+        fontSize: 'var(--step-2)',
+        fontWeight: 700, 
+      },
+      h6: {
+        fontSize: 'var(--step-1)',
+        fontWeight: 600,
+      },
+      body1: {
+        fontSize: 'var(--step-0)',
+      },
+      body2: {
+        fontSize: 'var(--step--1)',
+      },
+      caption: {
+        fontSize: 'var(--step--2)',
+      },
       button: {
+        fontSize: 'var(--step-0)',
         fontWeight: 600,
         textTransform: 'none',
         borderRadius: 2,
       },
     },
     shape: {
-      borderRadius: 12,
+      borderRadius: 16, // Slightly rounder to match fluid feel
     },
     components: {
       MuiButton: {
         styleOverrides: {
           root: {
             borderRadius: 50,
-            padding: '8px 24px',
+            padding: 'var(--space-2xs) var(--space-m)',
+            fontSize: 'var(--step-0)',
           },
         },
       },
@@ -142,6 +167,8 @@ export function App() {
             backgroundImage: 'none',
             boxShadow: mode === 'light' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
             border: mode === 'light' ? '1px solid #eee' : 'none',
+            borderRadius: '1.5rem', // Matches shape
+            padding: 0,
           },
         },
       },
