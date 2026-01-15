@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { 
     Container, 
     Box, 
@@ -28,7 +28,8 @@ import {
     useScrollTrigger,
     Slide,
     Link,
-    Stack
+    Stack,
+    InputAdornment
 } from "@mui/material";
 import { 
     Search as SearchIcon, 
@@ -42,7 +43,8 @@ import {
     Brightness4 as MoonIcon,
     Brightness7 as SunIcon,
     GitHub as GitHubIcon,
-    Twitter as TwitterIcon
+    Twitter as TwitterIcon,
+    Close as CloseIcon
 } from "@mui/icons-material";
 import "./index.css";
 
@@ -63,6 +65,7 @@ export function App() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ original: any[]; recommendations: any } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   
   // Theme State
   const [mode, setMode] = useState<'light' | 'dark'>('dark');
@@ -70,6 +73,19 @@ export function App() {
   const toggleColorMode = () => {
     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
   };
+
+  const resetSearch = () => {
+      setUrl("");
+      setError(null);
+      setData(null);
+  };
+
+  // Scroll to results when data is loaded
+  useEffect(() => {
+    if (data && resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [data]);
 
   // Define custom theme
   const theme = useMemo(() => createTheme({
@@ -160,6 +176,13 @@ export function App() {
     setError(null);
     setData(null);
 
+    // Heuristic #5: Error Prevention
+    if (!url.includes("list=")) {
+        setError("That doesn't look like a valid playlist URL. Please make sure it contains a 'list=' ID.");
+        setLoading(false);
+        return;
+    }
+
     try {
       let playlistId = "";
       try {
@@ -182,7 +205,7 @@ export function App() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to fetch playlist data");
+        throw new Error(result.error || "Failed to fetch playlist data. Is the playlist public?");
       }
 
       setData(result);
@@ -269,7 +292,14 @@ export function App() {
                   InputProps={{ 
                       disableUnderline: true, 
                       sx: { fontSize: '1.05rem' },
-                      "aria-label": "YouTube Music Playlist URL"
+                      "aria-label": "YouTube Music Playlist URL",
+                      endAdornment: url ? (
+                        <InputAdornment position="end">
+                          <IconButton onClick={resetSearch} size="small" aria-label="clear search">
+                             <CloseIcon fontSize="small" />
+                          </IconButton>
+                        </InputAdornment>
+                      ) : null
                   }}
                   required
                 />
@@ -319,7 +349,8 @@ export function App() {
             )}
 
             {/* Results Display */}
-            {data && (
+            <div ref={resultsRef}>
+             {data && (
               <Fade in={!!data} timeout={600}>
                 <Grid container spacing={4}>
                   {/* Original Vibe Column */}
@@ -424,7 +455,8 @@ export function App() {
                   </Grid>
                 </Grid>
               </Fade>
-            )}
+             )}
+            </div>
           </Container>
         </Box>
 
