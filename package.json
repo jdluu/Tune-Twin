@@ -13,26 +13,13 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
-    "@radix-ui/react-label": "^2.1.8",
-    "@radix-ui/react-slot": "^1.2.4",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.562.0",
     "react": "^19",
     "react-dom": "^19",
-    "tailwind-merge": "^3.4.0",
-    "tailwindcss-animate": "^1.0.7",
     "youtubei.js": "^16.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.18",
-    "@tailwindcss/vite": "^4.1.18",
     "@types/bun": "latest",
     "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "autoprefixer": "^10.4.23",
-    "bun-plugin-tailwind": "^0.1.2",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.18"
+    "@types/react-dom": "^19"
   }
 }
