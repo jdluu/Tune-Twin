@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./index.css";
 
-function App() {
+export function App() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ original: any[]; recommendations: any } | null>(null);
@@ -129,4 +129,5 @@ function App() {
   );
 }
 
-export default App;
+
+
