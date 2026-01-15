@@ -80,37 +80,12 @@ const server = serve({
           console.log(`Fetching recommendations based on seed ID: ${seedVideoId}`);
           const upNext = await youtube.music.getUpNext(seedVideoId);
 
-          // DEBUG: Log the structure
-          console.log("UpNext response keys:", Object.keys(upNext));
-          console.log("UpNext.items:", upNext.items ? `Array(${upNext.items.length})` : "undefined");
-          console.log("UpNext.contents:", upNext.contents ? `Array(${upNext.contents.length})` : "undefined");
-
           // Recommendations can be in .items or .contents depending on the response type
           const recItemsRaw = upNext.items || upNext.contents || [];
-          console.log("Raw recommendation items found:", recItemsRaw.length);
-          
-          // DEBUG: Log first item structure
-          if (recItemsRaw.length > 0) {
-              const first = recItemsRaw[0];
-              console.log("First rec item type:", first.type);
-              console.log("First rec item keys:", Object.keys(first));
-              console.log("First rec item.video_id:", first.video_id);
-              console.log("First rec item.videoId:", first.videoId);
-              console.log("First rec item.id:", first.id);
-              // Check if it's wrapped
-              if (first.video) {
-                  console.log("Wrapped in .video:", Object.keys(first.video));
-              }
-              if (first.content) {
-                  console.log("Wrapped in .content:", Object.keys(first.content));
-              }
-          }
           
           const recommendations = recItemsRaw
             .filter((item: any) => item.videoId || item.id || item.video_id)
             .map((item: any) => sanitizeTrack(item));
-
-          console.log("Sanitized recommendations:", recommendations.length);
 
           return Response.json({ 
               original: tracks, 
