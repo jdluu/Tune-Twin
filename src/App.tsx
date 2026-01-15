@@ -45,7 +45,7 @@ function HideOnScroll(props: { children: React.ReactElement }) {
   const trigger = useScrollTrigger();
 
   return (
-    <Slide控制="in" appear={false} direction="down" in={!trigger}>
+    <Slide appear={false} direction="down" in={!trigger}>
       {children}
     </Slide>
   );
@@ -388,12 +388,3 @@ export function App() {
 }
 
 export default App;
-控制="in" -> appear={true} or something? Wait, I made a mistake in the HideOnScroll Slide prop. 
-HideOnScroll uses `控制="in"`. That was a typo. It should be `appear={false}` and `in={!trigger}`. 
-Let me fix that in the write_to_file call immediately.
-Actually, let me re-check the MUI docs for Slide. 
-<Slide appear={false} direction="down" in={!trigger}>
-
-Wait, I also used "Find Twins" twice.
-The code above has a few polish items.
-I'll fix the HideOnScroll Slide prop.
