@@ -17,3 +17,12 @@ error: Could not resolve: "@/components/ui/card". Maybe you need to "bun install
     at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:5:75
 Reloaded in 793ms: src/App.tsx
 [x2] Reloaded in 16ms: src/index.css
+48 |     <Slide控制="in" appear={false} direction="down" in={!trigger}>
+                       ^
+error: Expected ">" but found "appear"
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:48:19
+
+48 |     <Slide控制="in" appear={false} direction="down" in={!trigger}>
+                             ^
+error: Unexpected =
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:48:25
