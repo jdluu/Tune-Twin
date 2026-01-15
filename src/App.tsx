@@ -26,17 +26,23 @@ import {
     Skeleton,
     Fade,
     useScrollTrigger,
-    Slide
+    Slide,
+    Link,
+    Stack
 } from "@mui/material";
 import { 
     Search as SearchIcon, 
     MusicNote as MusicIcon, 
     AutoAwesome as RecommendationIcon, 
-    LaunchIcon as OpenIcon,
+    Launch as OpenIcon,
     ErrorOutline as ErrorIcon,
     PlayArrow as PlayIcon,
     Equalizer as EqualizerIcon,
-    YouTube as YouTubeIcon
+    YouTube as YouTubeIcon,
+    Brightness4 as MoonIcon,
+    Brightness7 as SunIcon,
+    GitHub as GitHubIcon,
+    Twitter as TwitterIcon
 } from "@mui/icons-material";
 import "./index.css";
 
@@ -57,28 +63,35 @@ export function App() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ original: any[]; recommendations: any } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Theme State
+  const [mode, setMode] = useState<'light' | 'dark'>('dark');
+
+  const toggleColorMode = () => {
+    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
 
   // Define custom theme
   const theme = useMemo(() => createTheme({
     palette: {
-      mode: 'dark',
+      mode,
       primary: {
         main: '#FF0000', // YouTube Red
         contrastText: '#fff',
       },
       secondary: {
-        main: '#ffffff',
+        main: mode === 'dark' ? '#ffffff' : '#000000',
       },
       background: {
-        default: '#0F0F0F', // YouTube Dark Mode bg
-        paper: '#272727', // YouTube Card bg roughly
+        default: mode === 'dark' ? '#0F0F0F' : '#F9F9F9',
+        paper: mode === 'dark' ? '#272727' : '#FFFFFF',
       },
       text: {
-        primary: '#ffffff',
-        secondary: '#aaaaaa',
+        primary: mode === 'dark' ? '#ffffff' : '#0f0f0f',
+        secondary: mode === 'dark' ? '#aaaaaa' : '#606060',
       },
       action: {
-        hover: 'rgba(255, 255, 255, 0.1)',
+        hover: mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)',
       }
     },
     typography: {
@@ -86,9 +99,6 @@ export function App() {
       h4: {
         fontWeight: 700,
         letterSpacing: '-0.02em',
-      },
-      subtitle1: {
-        color: '#aaaaaa',
       },
       button: {
         fontWeight: 600,
@@ -103,41 +113,46 @@ export function App() {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 18, // Pill shape
-            padding: '8px 20px',
-            '&:hover': {
-              backgroundColor: '#cc0000',
-            }
+            borderRadius: 50,
+            padding: '8px 24px',
           },
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
-            backgroundColor: '#1F1F1F',
+            // Keep specialized styling in component or here? 
+            // Setting defaults here helps consistency.
             backgroundImage: 'none',
-            borderRadius: 16, 
+            boxShadow: mode === 'light' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
+            border: mode === 'light' ? '1px solid #eee' : 'none',
           },
         },
       },
-      MuiPaper: {
+      MuiAppBar: {
         styleOverrides: {
           root: {
-            backgroundImage: 'none',
-          },
-        },
+            backgroundColor: mode === 'dark' ? 'rgba(15,15,15,0.9)' : 'rgba(255,255,255,0.9)',
+            color: mode === 'dark' ? '#fff' : '#000',
+            backdropFilter: 'blur(10px)',
+          }
+        }
       },
       MuiTextField: {
          styleOverrides: {
              root: {
                  '& .MuiInputBase-input': {
-                     color: 'white',
+                     color: mode === 'dark' ? 'white' : 'black',
+                 },
+                 '& .MuiInputBase-input::placeholder': {
+                     color: mode === 'dark' ? '#aaaaaa' : '#666666',
+                     opacity: 1,
                  }
              }
          }
       }
     },
-  }), []);
+  }), [mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,53 +203,61 @@ export function App() {
       
       {/* Navigation */}
       <HideOnScroll>
-        <AppBar position="sticky" elevation={0} sx={{ 
-            bgcolor: 'rgba(15,15,15,0.95)', 
-            backdropFilter: 'blur(8px)',
-            borderBottom: '1px solid rgba(255,255,255,0.1)' 
-        }}>
+        <AppBar position="sticky" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Container maxWidth="lg">
             <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 0 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <YouTubeIcon color="primary" sx={{ fontSize: 32 }} />
-                <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: '-1px' }}>
+                <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: '-0.5px' }}>
                     TuneTwin
                 </Typography>
+              </Box>
+              <Box>
+                  <IconButton onClick={toggleColorMode} color="inherit">
+                      {theme.palette.mode === 'dark' ? <SunIcon /> : <MoonIcon />}
+                  </IconButton>
               </Box>
             </Toolbar>
           </Container>
         </AppBar>
       </HideOnScroll>
 
-      <Box sx={{ minHeight: '100vh', pt: 6, pb: 10 }}>
+      <Box sx={{ minHeight: '100vh', pt: 8, pb: 12 }}>
         <Container maxWidth="lg">
           {/* Hero Section */}
           <Box sx={{ mb: 10, textAlign: 'center' }}>
             <Typography variant="h3" component="h1" gutterBottom sx={{ 
-                fontWeight: 800,
-                mb: 2
+                fontWeight: 900,
+                mb: 3,
+                letterSpacing: '-1px'
             }}>
               Discover your music's <span style={{ color: '#FF0000' }}>twin code</span>.
             </Typography>
-            <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 650, mx: 'auto', mb: 6 }}>
-              Unlock the algorithmic DNA of your playlists. Paste your YouTube Music link and see what the recommendation engine is thinking.
+            <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 650, mx: 'auto', mb: 6, lineHeight: 1.6 }}>
+              Unlock the algorithmic DNA of your playlists. Paste a YouTube Music link below to uncover hidden gems that match your vibe perfectly.
             </Typography>
 
             {/* Search Paper */}
             <Paper elevation={0} component="form" onSubmit={handleSubmit} 
                    sx={{ 
-                       p: '4px', 
+                       p: '6px', 
                        display: 'flex', 
                        alignItems: 'center', 
                        gap: 1, 
                        maxWidth: 700, 
                        mx: 'auto', 
-                       bgcolor: '#282828',
+                       bgcolor: mode === 'dark' ? '#282828' : '#f0f0f0',
                        borderRadius: 50,
-                       border: '1px solid #3F3F3F'
+                       border: 1,
+                       borderColor: mode === 'dark' ? '#3F3F3F' : '#e0e0e0',
+                       transition: 'all 0.2s',
+                       '&:focus-within': {
+                           borderColor: 'primary.main',
+                           boxShadow: '0 0 0 2px rgba(255,0,0,0.1)'
+                       }
                    }}>
               <Box sx={{ pl: 2, display: 'flex', alignItems: 'center' }}>
-                  <SearchIcon sx={{ color: '#AAAAAA' }} />
+                  <SearchIcon sx={{ color: 'text.secondary' }} />
               </Box>
               <TextField
                 fullWidth
@@ -244,7 +267,7 @@ export function App() {
                 onChange={(e) => setUrl(e.target.value)}
                 InputProps={{ 
                     disableUnderline: true, 
-                    sx: { fontSize: '1rem', color: 'white' } 
+                    sx: { fontSize: '1.05rem' } 
                 }}
                 required
               />
@@ -256,24 +279,26 @@ export function App() {
                     height: 48, 
                     px: 4,
                     fontSize: '0.95rem',
-                    borderRadius: 50,
                     boxShadow: 'none',
-                    bgcolor: '#282828',
-                    color: '#aaaaaa',
+                    bgcolor: mode === 'dark' ? '#3F3F3F' : '#fff',
+                    color: mode === 'dark' ? '#aaaaaa' : '#555',
+                    border: '1px solid transparent',
+                    borderColor: mode === 'light' ? '#ddd' : 'transparent',
                     '&:hover': {
-                        bgcolor: '#3F3F3F',
-                        color: 'white'
+                        bgcolor: 'primary.main',
+                        color: 'white',
+                        borderColor: 'primary.main'
                     }
                 }}
               >
-                {loading ? "Analyzing..." : "Analyze"}
+                {loading ? "Scanning..." : "Analyze"}
               </Button>
             </Paper>
           </Box>
 
           {error && (
             <Fade in={!!error}>
-              <Alert severity="error" icon={<ErrorIcon />} variant="filled" sx={{ maxWidth: 700, mx: 'auto', mb: 8, borderRadius: 2 }}>
+              <Alert severity="error" icon={<ErrorIcon />} variant="filled" sx={{ maxWidth: 700, mx: 'auto', mb: 8, borderRadius: 3 }}>
                 {error}
               </Alert>
             </Fade>
@@ -282,11 +307,11 @@ export function App() {
           {/* Loading Skeletons */}
           {loading && !data && (
             <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
-                 <Skeleton variant="rounded" height={500} sx={{ borderRadius: 4, bgcolor: '#272727' }} />
+              <Grid size={{ xs: 12, md: 6 }}>
+                 <Skeleton variant="rounded" height={500} sx={{ borderRadius: 4 }} />
               </Grid>
-              <Grid item xs={12} md={6}>
-                 <Skeleton variant="rounded" height={500} sx={{ borderRadius: 4, bgcolor: '#272727' }} />
+              <Grid size={{ xs: 12, md: 6 }}>
+                 <Skeleton variant="rounded" height={500} sx={{ borderRadius: 4 }} />
               </Grid>
             </Grid>
           )}
@@ -294,29 +319,29 @@ export function App() {
           {/* Results Display */}
           {data && (
             <Fade in={!!data} timeout={600}>
-              <Grid container spacing={3}>
+              <Grid container spacing={4}>
                 {/* Original Vibe Column */}
-                <Grid item xs={12} md={6}>
-                  <Card elevation={0} sx={{ border: '1px solid #3F3F3F' }}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
                     <CardHeader 
                       title="Source Playlist" 
-                      subheader={`${data.original.length} videos`}
-                      avatar={<Avatar sx={{ bgcolor: 'transparent', color: 'white' }}><MusicIcon /></Avatar>}
+                      subheader={`${data.original.length} tracks found`}
+                      avatar={<Avatar sx={{ bgcolor: 'transparent', color: 'text.primary' }}><MusicIcon /></Avatar>}
                       titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
                     />
-                    <Divider sx={{ borderColor: '#3F3F3F' }} />
+                    <Divider />
                     <CardContent sx={{ p: 0 }}>
                       <List sx={{ maxHeight: 600, overflow: 'auto' }}>
                         {data.original.map((item: any, index: number) => (
-                          <ListItem key={item.id || index} divider sx={{ borderColor: '#3F3F3F' }}>
-                            <Typography variant="body2" sx={{ minWidth: 30, color: '#aaaaaa', mr: 2 }}>
-                              {index + 1}
+                          <ListItem key={item.id || index} divider>
+                            <Typography variant="body2" sx={{ minWidth: 30, color: 'text.secondary', mr: 2, fontFamily: 'monospace' }}>
+                              {(index + 1).toString().padStart(2, '0')}
                             </Typography>
                             <ListItemText 
                               primary={item.title?.runs?.[0]?.text || item.title?.text || "Unknown Track"}
                               secondary={item.subtitle?.runs?.[0]?.text || item.subtitle?.text || "Unknown Artist"}
-                              primaryTypographyProps={{ fontWeight: 500, noWrap: true }}
-                              secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: '#aaaaaa' }}
+                              primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
+                              secondaryTypographyProps={{ noWrap: true, variant: 'caption' }}
                             />
                           </ListItem>
                         ))}
@@ -326,25 +351,26 @@ export function App() {
                 </Grid>
 
                 {/* Recommendations Column */}
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Card elevation={0} sx={{ 
-                      bgcolor: '#1F1F1F',
-                      border: '1px solid rgba(255, 0, 0, 0.3)',
+                      bgcolor: mode === 'dark' ? '#1a0000' : '#fff5f5', // Subtle red tint
+                      border: '1px solid',
+                      borderColor: 'primary.main',
                   }}>
                     <CardHeader 
-                      title="Up Next" 
+                      title="Twin Matches" 
                       subheader="Algorithmic suggestions"
-                      avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><YouTubeIcon /></Avatar>}
+                      avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><EqualizerIcon /></Avatar>}
                       titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
                     />
-                     <Divider sx={{ borderColor: '#3F3F3F' }} />
+                     <Divider sx={{ borderColor: 'rgba(255,0,0,0.1)' }} />
                     <CardContent sx={{ p: 0 }}>
                       <List sx={{ maxHeight: 600, overflow: 'auto' }}>
                         {getTrackItems(data.recommendations).map((item: any, index: number) => (
                           <ListItem 
                               key={item.id || index} 
                               divider 
-                              sx={{ borderColor: '#3F3F3F' }}
+                              sx={{ borderColor: 'rgba(255,0,0,0.1)' }}
                               secondaryAction={
                                   <IconButton 
                                       edge="end" 
@@ -352,7 +378,7 @@ export function App() {
                                       href={`https://music.youtube.com/watch?v=${item.videoId || item.id}`} 
                                       target="_blank"
                                       sx={{ 
-                                          color: 'white',
+                                          color: 'text.primary',
                                           '&:hover': { color: 'primary.main' }
                                       }}
                                   >
@@ -370,7 +396,7 @@ export function App() {
                                <img 
                                 src={item.thumbnail?.thumbnails?.[0]?.url} 
                                 alt="" 
-                                style={{ width: 40, height: 40, borderRadius: 4, objectFit: 'cover' }} 
+                                style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} 
                                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                                />
                            </Box>
@@ -378,7 +404,7 @@ export function App() {
                               primary={item.title?.runs?.[0]?.text || item.title?.text || item.title?.toString() || "Unknown Discovery"}
                               secondary={item.short_byline?.runs?.[0]?.text || item.subtitle?.runs?.[0]?.text || "TuneTwin Suggestion"}
                               primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
-                              secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: '#aaaaaa' }}
+                              secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: 'primary.main' }}
                             />
                           </ListItem>
                         ))}
@@ -397,16 +423,59 @@ export function App() {
         </Container>
       </Box>
 
-      {/* Footer */}
+      {/* Enhanced Footer */}
       <Box component="footer" sx={{ 
-          py: 4, 
-          textAlign: 'center', 
-          bgcolor: '#0F0F0F',
-          borderTop: '1px solid #3F3F3F'
+          py: 6, 
+          bgcolor: mode === 'dark' ? '#0a0a0a' : '#f5f5f5',
+          borderTop: 1,
+          borderColor: 'divider',
+          mt: 'auto'
       }}>
-        <Typography variant="caption" sx={{ color: '#555555', fontWeight: 500 }}>
-          TuneTwin • Powered by YouTube Music Intelligence
-        </Typography>
+        <Container maxWidth="lg">
+          <Grid container spacing={4} justifyContent="space-between">
+            <Grid item xs={12} md={4}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <YouTubeIcon color="primary" />
+                <Typography variant="h6" fontWeight="bold">TuneTwin</Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300 }}>
+                An experimental music discovery tool powered by bun and youtubei.js. 
+                Connecting your playlists to their algorithmic siblings.
+              </Typography>
+            </Grid>
+            
+            <Grid item xs={6} md={2}>
+              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Project</Typography>
+              <Stack spacing={1}>
+                <Link href="#" color="text.secondary" underline="hover">About</Link>
+                <Link href="#" color="text.secondary" underline="hover">Changelog</Link>
+                <Link href="#" color="text.secondary" underline="hover">License</Link>
+              </Stack>
+            </Grid>
+            
+            <Grid item xs={6} md={2}>
+              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Community</Typography>
+              <Stack spacing={1}>
+                <Link href="#" color="text.secondary" underline="hover">GitHub</Link>
+                <Link href="#" color="text.secondary" underline="hover">Discord</Link>
+                <Link href="#" color="text.secondary" underline="hover">Twitter</Link>
+              </Stack>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+               <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Connect</Typography>
+               <Stack direction="row" spacing={1}>
+                  <IconButton size="small" color="inherit" aria-label="GitHub"><GitHubIcon /></IconButton>
+                  <IconButton size="small" color="inherit" aria-label="Twitter"><TwitterIcon /></IconButton>
+               </Stack>
+            </Grid>
+          </Grid>
+          <Box sx={{ mt: 6, textAlign: 'center' }}>
+            <Typography variant="caption" color="text.secondary">
+              © {new Date().getFullYear()} TuneTwin. Not affiliated with Google or YouTube.
+            </Typography>
+          </Box>
+        </Container>
       </Box>
     </ThemeProvider>
   );
