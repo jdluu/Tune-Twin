@@ -483,13 +483,15 @@ export function App() {
                                 mr: 2,
                                 minWidth: 40
                               }}>
-                                <img 
-                                  src={item.thumbnail} 
-                                  alt={item.title || "Album Art"}
-                                  loading="lazy"
-                                  style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} 
-                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                                />
+                                {item.thumbnail && (
+                                  <img 
+                                    src={item.thumbnail} 
+                                    alt={item.title || "Album Art"}
+                                    loading="lazy"
+                                    style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} 
+                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                                  />
+                                )}
                             </Box>
                               <ListItemText 
                                 primary={

@@ -32,12 +32,15 @@ const server = serve({
 
           // Helper to get thumbnail
           const getThumbnail = (data: any) => {
-              const thumbs = data.thumbnails || data.thumbnail?.thumbnails;
+              // Try multiple possible paths for thumbnail data
+              const thumbs = data.thumbnail?.contents?.[0]?.image?.sources ||
+                            data.thumbnail?.thumbnails ||
+                            data.thumbnails;
               if (thumbs && Array.isArray(thumbs) && thumbs.length > 0) {
                   // Get the last one (usually highest quality)
-                  return thumbs[thumbs.length - 1].url;
+                  return thumbs[thumbs.length - 1].url || thumbs[0].url || "";
               }
-              return "";
+              return null; // Return null instead of empty string to avoid empty src
           }
 
           const sanitizeTrack = (item: any) => {
@@ -50,11 +53,11 @@ const server = serve({
               }
 
               return {
-                  id: item.videoId || item.id,
+                  id: item.video_id || item.videoId || item.id,
                   title: getText(item.title),
                   artist: artist,
                   thumbnail: getThumbnail(item),
-                  duration: getText(item.length) || getText(item.duration),
+                  duration: getText(item.duration) || getText(item.length),
                   album: getText(item.album)
               };
           };
@@ -77,11 +80,37 @@ const server = serve({
           console.log(`Fetching recommendations based on seed ID: ${seedVideoId}`);
           const upNext = await youtube.music.getUpNext(seedVideoId);
 
+          // DEBUG: Log the structure
+          console.log("UpNext response keys:", Object.keys(upNext));
+          console.log("UpNext.items:", upNext.items ? `Array(${upNext.items.length})` : "undefined");
+          console.log("UpNext.contents:", upNext.contents ? `Array(${upNext.contents.length})` : "undefined");
+
           // Recommendations can be in .items or .contents depending on the response type
           const recItemsRaw = upNext.items || upNext.contents || [];
+          console.log("Raw recommendation items found:", recItemsRaw.length);
+          
+          // DEBUG: Log first item structure
+          if (recItemsRaw.length > 0) {
+              const first = recItemsRaw[0];
+              console.log("First rec item type:", first.type);
+              console.log("First rec item keys:", Object.keys(first));
+              console.log("First rec item.video_id:", first.video_id);
+              console.log("First rec item.videoId:", first.videoId);
+              console.log("First rec item.id:", first.id);
+              // Check if it's wrapped
+              if (first.video) {
+                  console.log("Wrapped in .video:", Object.keys(first.video));
+              }
+              if (first.content) {
+                  console.log("Wrapped in .content:", Object.keys(first.content));
+              }
+          }
+          
           const recommendations = recItemsRaw
-            .filter((item: any) => item.videoId || item.id)
+            .filter((item: any) => item.videoId || item.id || item.video_id)
             .map((item: any) => sanitizeTrack(item));
+
+          console.log("Sanitized recommendations:", recommendations.length);
 
           return Response.json({ 
               original: tracks, 
