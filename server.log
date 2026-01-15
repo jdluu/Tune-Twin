@@ -26,3 +26,27 @@ error: Expected ">" but found "appear"
                              ^
 error: Unexpected =
     at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:48:25
+48 |     <Slide控制="in" appear={false} direction="down" in={!trigger}>
+                       ^
+error: Expected ">" but found "appear"
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:48:19
+
+48 |     <Slide控制="in" appear={false} direction="down" in={!trigger}>
+                             ^
+error: Unexpected =
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:48:25
+48 |     <Slide控制="in" appear={false} direction="down" in={!trigger}>
+                       ^
+error: Expected ">" but found "appear"
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:48:19
+
+48 |     <Slide控制="in" appear={false} direction="down" in={!trigger}>
+                             ^
+error: Unexpected =
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:48:25
+391 | 控制="in" -> appear={true} or something? Wait, I made a mistake in the HideOnScroll Sli
+               ^
+error: Unexpected >
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:391:10
+Reloaded in 7ms: src/App.tsx
+🚀 Server running at http://localhost:3000/

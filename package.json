@@ -15,11 +15,13 @@
     "@mui/material": "^7.3.7",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@types/spotify-web-api-node": "^5.0.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",
     "react": "^19",
     "react-dom": "^19",
+    "spotify-web-api-node": "^5.0.2",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "youtubei.js": "^16.0.1"
