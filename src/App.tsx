@@ -434,7 +434,7 @@ export function App() {
         }}>
           <Container maxWidth="lg">
             <Grid container spacing={4} justifyContent="space-between">
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                   <YouTubeIcon color="primary" />
                   <Typography variant="h6" fontWeight="bold">TuneTwin</Typography>
@@ -445,7 +445,7 @@ export function App() {
                 </Typography>
               </Grid>
               
-              <Grid item xs={6} md={2}>
+              <Grid size={{ xs: 6, md: 2 }}>
                 <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Project</Typography>
                 <Stack spacing={1}>
                   <Link href="#" color="text.secondary" underline="hover">About</Link>
@@ -454,20 +454,12 @@ export function App() {
                 </Stack>
               </Grid>
               
-              <Grid item xs={6} md={2}>
-                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Community</Typography>
+              <Grid size={{ xs: 6, md: 2 }}>
+                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Source</Typography>
                 <Stack spacing={1}>
-                  <Link href="#" color="text.secondary" underline="hover">GitHub</Link>
-                  <Link href="#" color="text.secondary" underline="hover">Discord</Link>
-                  <Link href="#" color="text.secondary" underline="hover">Twitter</Link>
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12} md={3}>
-                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Connect</Typography>
-                <Stack direction="row" spacing={1}>
-                    <IconButton size="small" color="inherit" aria-label="GitHub"><GitHubIcon /></IconButton>
-                    <IconButton size="small" color="inherit" aria-label="Twitter"><TwitterIcon /></IconButton>
+                  <Link href="https://github.com/topics/tunetwin" color="text.secondary" underline="hover" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <GitHubIcon fontSize="small" /> GitHub
+                  </Link>
                 </Stack>
               </Grid>
             </Grid>
