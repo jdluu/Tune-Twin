@@ -87,4 +87,8 @@ Processes a YouTube Music playlist and returns track data with recommendations.
 
 ## License
 
-This project is for educational and personal use. YouTube Music is a trademark of Google LLC. This application is not affiliated with or endorsed by Google.
+This project is licensed under the [MIT License](LICENSE).
+
+## Disclaimer
+
+YouTube Music is a trademark of Google LLC. This application is not affiliated with or endorsed by Google.
