@@ -35,7 +35,8 @@ import {
     LaunchIcon as OpenIcon,
     ErrorOutline as ErrorIcon,
     PlayArrow as PlayIcon,
-    Equalizer as EqualizerIcon
+    Equalizer as EqualizerIcon,
+    YouTube as YouTubeIcon
 } from "@mui/icons-material";
 import "./index.css";
 
@@ -62,37 +63,37 @@ export function App() {
     palette: {
       mode: 'dark',
       primary: {
-        main: '#1DB954', // Spotify Green
+        main: '#FF0000', // YouTube Red
         contrastText: '#fff',
       },
       secondary: {
         main: '#ffffff',
       },
       background: {
-        default: '#000000',
-        paper: '#121212',
+        default: '#0F0F0F', // YouTube Dark Mode bg
+        paper: '#272727', // YouTube Card bg roughly
       },
       text: {
         primary: '#ffffff',
-        secondary: '#b3b3b3',
+        secondary: '#aaaaaa',
       },
       action: {
-        hover: 'rgba(255, 255, 255, 0.08)',
+        hover: 'rgba(255, 255, 255, 0.1)',
       }
     },
     typography: {
-      fontFamily: '"Inter", "system-ui", "-apple-system", sans-serif',
+      fontFamily: '"Roboto", "Arial", sans-serif',
       h4: {
-        fontWeight: 900,
+        fontWeight: 700,
         letterSpacing: '-0.02em',
       },
       subtitle1: {
-        color: '#b3b3b3',
+        color: '#aaaaaa',
       },
       button: {
-        fontWeight: 700,
+        fontWeight: 600,
         textTransform: 'none',
-        borderRadius: 50,
+        borderRadius: 2,
       },
     },
     shape: {
@@ -102,20 +103,20 @@ export function App() {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 24,
-            padding: '10px 24px',
+            borderRadius: 18, // Pill shape
+            padding: '8px 20px',
+            '&:hover': {
+              backgroundColor: '#cc0000',
+            }
           },
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
-            backgroundColor: '#181818',
+            backgroundColor: '#1F1F1F',
             backgroundImage: 'none',
-            '&:hover': {
-              backgroundColor: '#282828',
-            },
-            transition: 'background-color 0.3s ease',
+            borderRadius: 16, 
           },
         },
       },
@@ -126,6 +127,15 @@ export function App() {
           },
         },
       },
+      MuiTextField: {
+         styleOverrides: {
+             root: {
+                 '& .MuiInputBase-input': {
+                     color: 'white',
+                 }
+             }
+         }
+      }
     },
   }), []);
 
@@ -179,20 +189,17 @@ export function App() {
       {/* Navigation */}
       <HideOnScroll>
         <AppBar position="sticky" elevation={0} sx={{ 
-            bgcolor: 'rgba(0,0,0,0.8)', 
-            backdropFilter: 'blur(10px)',
+            bgcolor: 'rgba(15,15,15,0.95)', 
+            backdropFilter: 'blur(8px)',
             borderBottom: '1px solid rgba(255,255,255,0.1)' 
         }}>
           <Container maxWidth="lg">
             <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 0 } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <MusicIcon color="primary" sx={{ fontSize: 32 }} />
-                <Typography variant="h5" sx={{ fontWeight: 900, color: 'primary.main' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <YouTubeIcon color="primary" sx={{ fontSize: 32 }} />
+                <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: '-1px' }}>
                     TuneTwin
                 </Typography>
-              </Box>
-              <Box>
-                <Button color="inherit" size="small" sx={{ color: 'text.secondary' }}>How it works</Button>
               </Box>
             </Toolbar>
           </Container>
@@ -204,28 +211,31 @@ export function App() {
           {/* Hero Section */}
           <Box sx={{ mb: 10, textAlign: 'center' }}>
             <Typography variant="h3" component="h1" gutterBottom sx={{ 
-                fontWeight: 900,
+                fontWeight: 800,
                 mb: 2
             }}>
-              Your playlist's biological twin.
+              Discover your music's <span style={{ color: '#FF0000' }}>twin code</span>.
             </Typography>
-            <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 700, mx: 'auto', mb: 6 }}>
-              Unlock new musical textures. Paste your YouTube Music playlist and let TuneTwin find the missing pieces of your vibe.
+            <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 650, mx: 'auto', mb: 6 }}>
+              Unlock the algorithmic DNA of your playlists. Paste your YouTube Music link and see what the recommendation engine is thinking.
             </Typography>
 
             {/* Search Paper */}
             <Paper elevation={0} component="form" onSubmit={handleSubmit} 
                    sx={{ 
-                       p: 1.5, 
+                       p: '4px', 
                        display: 'flex', 
                        alignItems: 'center', 
-                       gap: 2, 
-                       maxWidth: 800, 
+                       gap: 1, 
+                       maxWidth: 700, 
                        mx: 'auto', 
                        bgcolor: '#282828',
-                       borderRadius: 10,
+                       borderRadius: 50,
+                       border: '1px solid #3F3F3F'
                    }}>
-              <SearchIcon sx={{ ml: 2, color: 'text.secondary' }} />
+              <Box sx={{ pl: 2, display: 'flex', alignItems: 'center' }}>
+                  <SearchIcon sx={{ color: '#AAAAAA' }} />
+              </Box>
               <TextField
                 fullWidth
                 variant="standard"
@@ -234,7 +244,7 @@ export function App() {
                 onChange={(e) => setUrl(e.target.value)}
                 InputProps={{ 
                     disableUnderline: true, 
-                    sx: { fontSize: '1.1rem', color: 'white' } 
+                    sx: { fontSize: '1rem', color: 'white' } 
                 }}
                 required
               />
@@ -243,20 +253,27 @@ export function App() {
                 variant="contained" 
                 disabled={loading}
                 sx={{ 
-                    height: 52, 
-                    px: 6,
-                    fontSize: '1rem',
-                    boxShadow: '0 4px 14px 0 rgba(29, 185, 84, 0.39)'
+                    height: 48, 
+                    px: 4,
+                    fontSize: '0.95rem',
+                    borderRadius: 50,
+                    boxShadow: 'none',
+                    bgcolor: '#282828',
+                    color: '#aaaaaa',
+                    '&:hover': {
+                        bgcolor: '#3F3F3F',
+                        color: 'white'
+                    }
                 }}
               >
-                {loading ? "Analyzing..." : "Find Twins"}
+                {loading ? "Analyzing..." : "Analyze"}
               </Button>
             </Paper>
           </Box>
 
           {error && (
             <Fade in={!!error}>
-              <Alert severity="error" icon={<ErrorIcon />} sx={{ maxWidth: 800, mx: 'auto', mb: 8, borderRadius: 2 }}>
+              <Alert severity="error" icon={<ErrorIcon />} variant="filled" sx={{ maxWidth: 700, mx: 'auto', mb: 8, borderRadius: 2 }}>
                 {error}
               </Alert>
             </Fade>
@@ -266,39 +283,40 @@ export function App() {
           {loading && !data && (
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
-                 <Skeleton variant="rounded" height={600} sx={{ borderRadius: 3, bgcolor: 'rgba(255,255,255,0.05)' }} />
+                 <Skeleton variant="rounded" height={500} sx={{ borderRadius: 4, bgcolor: '#272727' }} />
               </Grid>
               <Grid item xs={12} md={6}>
-                 <Skeleton variant="rounded" height={600} sx={{ borderRadius: 3, bgcolor: 'rgba(255,255,255,0.05)' }} />
+                 <Skeleton variant="rounded" height={500} sx={{ borderRadius: 4, bgcolor: '#272727' }} />
               </Grid>
             </Grid>
           )}
 
           {/* Results Display */}
           {data && (
-            <Fade in={!!data} timeout={800}>
-              <Grid container spacing={4}>
+            <Fade in={!!data} timeout={600}>
+              <Grid container spacing={3}>
                 {/* Original Vibe Column */}
                 <Grid item xs={12} md={6}>
-                  <Card elevation={0} sx={{ borderRadius: 3 }}>
+                  <Card elevation={0} sx={{ border: '1px solid #3F3F3F' }}>
                     <CardHeader 
-                      title="Current Vibe" 
-                      subheader={`${data.original.length} tracks selected`}
-                      avatar={<Avatar sx={{ bgcolor: 'rgba(29,185,84,0.1)', color: 'primary.main' }}><MusicIcon /></Avatar>}
-                      titleTypographyProps={{ variant: 'h6', fontWeight: 800 }}
+                      title="Source Playlist" 
+                      subheader={`${data.original.length} videos`}
+                      avatar={<Avatar sx={{ bgcolor: 'transparent', color: 'white' }}><MusicIcon /></Avatar>}
+                      titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
                     />
+                    <Divider sx={{ borderColor: '#3F3F3F' }} />
                     <CardContent sx={{ p: 0 }}>
                       <List sx={{ maxHeight: 600, overflow: 'auto' }}>
                         {data.original.map((item: any, index: number) => (
-                          <ListItem key={item.id || index} divider sx={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                            <ListItemIcon sx={{ minWidth: 40, color: 'rgba(255,255,255,0.2)' }}>
-                              {(index + 1).toString().padStart(2, '0')}
-                            </ListItemIcon>
+                          <ListItem key={item.id || index} divider sx={{ borderColor: '#3F3F3F' }}>
+                            <Typography variant="body2" sx={{ minWidth: 30, color: '#aaaaaa', mr: 2 }}>
+                              {index + 1}
+                            </Typography>
                             <ListItemText 
                               primary={item.title?.runs?.[0]?.text || item.title?.text || "Unknown Track"}
                               secondary={item.subtitle?.runs?.[0]?.text || item.subtitle?.text || "Unknown Artist"}
-                              primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
-                              secondaryTypographyProps={{ noWrap: true, variant: 'caption' }}
+                              primaryTypographyProps={{ fontWeight: 500, noWrap: true }}
+                              secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: '#aaaaaa' }}
                             />
                           </ListItem>
                         ))}
@@ -309,29 +327,24 @@ export function App() {
 
                 {/* Recommendations Column */}
                 <Grid item xs={12} md={6}>
-                  <Card elevation={10} sx={{ 
-                      borderRadius: 3, 
-                      bgcolor: '#181818',
-                      border: '1px solid rgba(29, 185, 84, 0.2)',
+                  <Card elevation={0} sx={{ 
+                      bgcolor: '#1F1F1F',
+                      border: '1px solid rgba(255, 0, 0, 0.3)',
                   }}>
                     <CardHeader 
-                      title="TuneTwins" 
-                      subheader="Discovered matches"
-                      avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><EqualizerIcon /></Avatar>}
-                      titleTypographyProps={{ variant: 'h6', fontWeight: 800, color: 'primary.main' }}
-                      action={
-                          <Box sx={{ mt: 1, mr: 1, px: 2, py: 0.5, bgcolor: 'primary.main', color: 'black', borderRadius: 10, fontSize: '0.7rem', fontWeight: 800 }}>
-                              AI TWINS
-                          </Box>
-                      }
+                      title="Up Next" 
+                      subheader="Algorithmic suggestions"
+                      avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><YouTubeIcon /></Avatar>}
+                      titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
                     />
+                     <Divider sx={{ borderColor: '#3F3F3F' }} />
                     <CardContent sx={{ p: 0 }}>
                       <List sx={{ maxHeight: 600, overflow: 'auto' }}>
                         {getTrackItems(data.recommendations).map((item: any, index: number) => (
                           <ListItem 
                               key={item.id || index} 
                               divider 
-                              sx={{ borderColor: 'rgba(255,255,255,0.05)' }}
+                              sx={{ borderColor: '#3F3F3F' }}
                               secondaryAction={
                                   <IconButton 
                                       edge="end" 
@@ -339,26 +352,39 @@ export function App() {
                                       href={`https://music.youtube.com/watch?v=${item.videoId || item.id}`} 
                                       target="_blank"
                                       sx={{ 
-                                          color: 'black', 
-                                          bgcolor: 'primary.main',
-                                          '&:hover': { bgcolor: '#1ed760' }
+                                          color: 'white',
+                                          '&:hover': { color: 'primary.main' }
                                       }}
                                   >
-                                      <PlayIcon fontSize="small" />
+                                      <PlayIcon />
                                   </IconButton>
                               }
                           >
+                           <Box sx={{ 
+                               display: 'flex', 
+                               flexDirection: 'column', 
+                               alignItems: 'center', 
+                               mr: 2,
+                               minWidth: 40
+                            }}>
+                               <img 
+                                src={item.thumbnail?.thumbnails?.[0]?.url} 
+                                alt="" 
+                                style={{ width: 40, height: 40, borderRadius: 4, objectFit: 'cover' }} 
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                               />
+                           </Box>
                             <ListItemText 
                               primary={item.title?.runs?.[0]?.text || item.title?.text || item.title?.toString() || "Unknown Discovery"}
                               secondary={item.short_byline?.runs?.[0]?.text || item.subtitle?.runs?.[0]?.text || "TuneTwin Suggestion"}
-                              primaryTypographyProps={{ fontWeight: 700, noWrap: true }}
-                              secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: 'primary.main' }}
+                              primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
+                              secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: '#aaaaaa' }}
                             />
                           </ListItem>
                         ))}
                         {getTrackItems(data.recommendations).length === 0 && (
                             <Box sx={{ py: 10, textAlign: 'center', opacity: 0.5 }}>
-                                <Typography variant="body2">No twins found for this vibe yet.</Typography>
+                                <Typography variant="body2">No recommendations available.</Typography>
                             </Box>
                         )}
                       </List>
@@ -373,14 +399,13 @@ export function App() {
 
       {/* Footer */}
       <Box component="footer" sx={{ 
-          pt: 10, 
-          pb: 6, 
+          py: 4, 
           textAlign: 'center', 
-          borderTop: '1px solid rgba(255,255,255,0.05)',
-          bgcolor: 'black'
+          bgcolor: '#0F0F0F',
+          borderTop: '1px solid #3F3F3F'
       }}>
-        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>
-          TuneTwin v2.0 • Build for the auditory curious • {new Date().getFullYear()}
+        <Typography variant="caption" sx={{ color: '#555555', fontWeight: 500 }}>
+          TuneTwin • Powered by YouTube Music Intelligence
         </Typography>
       </Box>
     </ThemeProvider>

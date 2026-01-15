@@ -50,3 +50,9 @@ error: Unexpected >
     at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:391:10
 Reloaded in 7ms: src/App.tsx
 🚀 Server running at http://localhost:3000/
+🚀 Server running at http://localhost:3000/
+[x2] Reloaded in 3ms: src/App.tsx
+[x3] Reloaded in 5ms: src/App.tsx
+[31mfrontend[0m error: Unknown HMR script: a5b8f48194a25a5c
+      at unknown (http://localhost:3000/_bun/client/hmr-a5b8f48194a25a5c.js:1:28)
+    from browser tab http://localhost:3000/
