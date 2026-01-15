@@ -411,9 +411,25 @@ export function App() {
                                   {item.title || "Unknown Track"}
                                 </Link>
                               }
-                              secondary={item.artist || "Unknown Artist"}
+                              secondary={
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                                     <span>{item.artist || "Unknown Artist"}</span>
+                                     {item.album && (
+                                       <>
+                                         <span>•</span>
+                                         <span>{item.album}</span>
+                                       </>
+                                     )}
+                                     {item.duration && (
+                                       <>
+                                         <span>•</span>
+                                         <span>{item.duration}</span>
+                                       </>
+                                     )}
+                                  </span>
+                              }
                               primaryTypographyProps={{ component: 'div' }}
-                              secondaryTypographyProps={{ noWrap: true, variant: 'caption' }}
+                              secondaryTypographyProps={{ noWrap: true, variant: 'caption', component: 'div' }}
                             />
                           </ListItem>
                         ))}
@@ -493,9 +509,25 @@ export function App() {
                                     {item.title || "Unknown Discovery"}
                                   </Link>
                                 }
-                                secondary={item.artist || "TuneTwin Suggestion"}
+                                secondary={
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                                     <span>{item.artist || "TuneTwin Suggestion"}</span>
+                                     {item.album && (
+                                       <>
+                                         <span>•</span>
+                                         <span>{item.album}</span>
+                                       </>
+                                     )}
+                                     {item.duration && (
+                                       <>
+                                         <span>•</span>
+                                         <span>{item.duration}</span>
+                                       </>
+                                     )}
+                                  </span>
+                                }
                                 primaryTypographyProps={{ component: 'div' }}
-                                secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: 'primary.main' }}
+                                secondaryTypographyProps={{ noWrap: true, variant: 'caption', color: 'primary.main', component: 'div' }}
                               />
                             </ListItem>
                           ))}
