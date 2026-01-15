@@ -6,8 +6,6 @@ const youtube = await Innertube.create();
 
 const server = serve({
   routes: {
-    // Bun's native routes object handles path matching and serving index.html
-    // with automatic bundling of linked scripts (frontend.tsx).
     "/api/process-playlist": {
       async POST(req) {
         try {
@@ -18,7 +16,6 @@ const server = serve({
           console.log(`Fetching playlist: ${playlistId}`);
           const playlist = await youtube.music.getPlaylist(playlistId);
           
-          // Filter for items that have an ID (MusicResponsiveListItem)
           const tracks = playlist.items.filter((item: any) => item.id);
           
           if (!tracks || tracks.length === 0) {
@@ -40,8 +37,6 @@ const server = serve({
         }
       }
     },
-
-    // Catch-all for the frontend
     "/*": index,
   },
 
