@@ -1,2 +1,19 @@
 nohup: ignoring input
 🚀 Server running at http://localhost:3000/
+Bundled page in 192ms: src/index.html
+3 | import { Button } from "@/components/ui/button";
+                           ^
+error: Could not resolve: "@/components/ui/button". Maybe you need to "bun install"?
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:3:24
+
+4 | import { Input } from "@/components/ui/input";
+                          ^
+error: Could not resolve: "@/components/ui/input". Maybe you need to "bun install"?
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:4:23
+
+5 | import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+                                                                              ^
+error: Could not resolve: "@/components/ui/card". Maybe you need to "bun install"?
+    at /home/jdluu/CS Stuff/Tune-Twin/src/App.tsx:5:75
+Reloaded in 793ms: src/App.tsx
+[x2] Reloaded in 16ms: src/index.css

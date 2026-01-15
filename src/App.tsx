@@ -1,9 +1,36 @@
-import { useState } from "react";
-import { Search, Info, ExternalLink, Music2, TrendingUp, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { useState, useMemo } from "react";
+import { 
+    Container, 
+    Box, 
+    Typography, 
+    TextField, 
+    Button, 
+    Card, 
+    CardContent, 
+    CardHeader, 
+    Grid, 
+    List, 
+    ListItem, 
+    ListItemText, 
+    ListItemIcon, 
+    IconButton, 
+    CircularProgress, 
+    Alert, 
+    ThemeProvider, 
+    createTheme, 
+    CssBaseline, 
+    Paper,
+    Divider,
+    Avatar
+} from "@mui/material";
+import { 
+    Search as SearchIcon, 
+    MusicNote as MusicIcon, 
+    AutoAwesome as RecommendationIcon, 
+    ExternalLink as LaunchIcon,
+    ErrorOutline as ErrorIcon,
+    PlayArrow as PlayIcon
+} from "@mui/icons-material";
 import "./index.css";
 
 export function App() {
@@ -11,6 +38,47 @@ export function App() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ original: any[]; recommendations: any } | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Define custom theme
+  const theme = useMemo(() => createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#1DB954', // Spotify-esque green for "Music" vibe
+      },
+      secondary: {
+        main: '#ffffff',
+      },
+      background: {
+        default: '#000000',
+        paper: '#121212',
+      },
+    },
+    typography: {
+      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      h1: {
+        fontWeight: 800,
+      },
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            textTransform: 'none',
+            fontWeight: 600,
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: 'none',
+          },
+        },
+      },
+    },
+  }), []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,155 +124,154 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/10">
-      <div className="container max-w-6xl mx-auto py-12 px-4 space-y-12">
-        {/* Header Section */}
-        <header className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-2xl mb-2">
-            <Music2 className="w-10 h-10 text-primary" />
-          </div>
-          <h1 className="text-5xl font-extrabold tracking-tight lg:text-6xl bg-gradient-to-tr from-primary to-primary/60 bg-clip-text text-transparent">
-            TuneTwin
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Discover the perfect auditory match for your favorite YouTube Music playlists. 
-            Enter a URL below to see what sounds like your vibe.
-          </p>
-        </header>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh', py: 8 }}>
+        <Container maxWidth="lg">
+          {/* Header */}
+          <Box sx={{ mb: 8, textAlign: 'center' }}>
+            <Avatar sx={{ m: '0 auto', mb: 2, bgcolor: 'primary.main', width: 64, height: 64 }}>
+                <MusicIcon fontSize="large" />
+            </Avatar>
+            <Typography variant="h2" component="h1" gutterBottom sx={{ 
+                background: 'linear-gradient(45deg, #1DB954 30%, #1ed760 90%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 900
+            }}>
+              TuneTwin
+            </Typography>
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+              Generate recommendations from your favorite YouTube Music playlists.
+            </Typography>
+          </Box>
 
-        {/* Search Section */}
-        <section className="max-w-xl mx-auto">
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Paste YouTube Music playlist URL..."
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="pl-10 h-12 text-base"
-                required
-              />
-            </div>
-            <Button type="submit" size="lg" disabled={loading} className="h-12 px-8 font-semibold shadow-lg shadow-primary/20">
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Analyzing...
-                </span>
-              ) : (
-                "Find Twins"
-              )}
+          {/* Search Form */}
+          <Paper elevation={0} component="form" onSubmit={handleSubmit} 
+                 sx={{ p: 1, mb: 8, display: 'flex', alignItems: 'center', gap: 1, maxWidth: 700, mx: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <SearchIcon sx={{ ml: 2, color: 'text.secondary' }} />
+            <TextField
+              fullWidth
+              variant="standard"
+              placeholder="Paste YouTube Music playlist URL..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              InputProps={{ disableUnderline: true, sx: { px: 1 } }}
+              required
+            />
+            <Button 
+                type="submit" 
+                variant="contained" 
+                disabled={loading}
+                sx={{ px: 4, height: 48 }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Find Twins"}
             </Button>
-          </form>
+          </Paper>
 
           {error && (
-            <div className="mt-4 p-4 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center gap-3 text-destructive animate-in fade-in slide-in-from-top-2">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm font-medium">{error}</p>
-            </div>
+            <Alert severity="error" icon={<ErrorIcon />} sx={{ maxWidth: 700, mx: 'auto', mb: 8 }}>
+              {error}
+            </Alert>
           )}
-        </section>
 
-        {/* Results Section */}
-        {data && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Original Playlist */}
-            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-                <div className="space-y-1">
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <Music2 className="w-5 h-5 text-primary" />
-                    Your Vibe
-                  </CardTitle>
-                  <CardDescription>Tracks from your playlist</CardDescription>
-                </div>
-                <div className="px-3 py-1 bg-secondary rounded-full text-xs font-semibold">
-                  {data.original.length} Tracks
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {data.original.map((item: any, index: number) => (
-                    <div 
-                      key={item.id || index} 
-                      className="group flex items-center justify-between p-3 rounded-xl hover:bg-accent/50 transition-all duration-200 border border-transparent hover:border-border/50"
-                    >
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-semibold truncate group-hover:text-primary transition-colors">
-                          {item.title?.runs?.[0]?.text || item.title?.text || "Unknown Title"}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate italic">
-                          {item.subtitle?.runs?.[0]?.text || item.subtitle?.text || "Unknown Artist"}
-                        </span>
-                      </div>
-                      <div className="text-xs font-mono text-muted-foreground/30">
-                        {(index + 1).toString().padStart(2, '0')}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Results Results grid */}
+          {data && (
+            <Grid container spacing={4}>
+              {/* Original Vibe */}
+              <Grid item xs={12} md={6}>
+                <Card variant="outlined" sx={{ bgcolor: 'background.paper', borderColor: 'rgba(255,255,255,0.1)' }}>
+                  <CardHeader 
+                    title="Your Vibe" 
+                    subheader={`${data.original.length} tracks found`}
+                    avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><MusicIcon /></Avatar>}
+                    titleTypographyProps={{ fontWeight: 700 }}
+                  />
+                  <Divider sx={{ opacity: 0.1 }} />
+                  <CardContent sx={{ p: 0 }}>
+                    <List sx={{ maxHeight: 600, overflow: 'auto' }}>
+                      {data.original.map((item: any, index: number) => (
+                        <ListItem key={item.id || index} divider>
+                          <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary', fontSize: '0.8rem' }}>
+                            {(index + 1).toString().padStart(2, '0')}
+                          </ListItemIcon>
+                          <ListItemText 
+                            primary={item.title?.runs?.[0]?.text || item.title?.text || "Unknown Title"}
+                            secondary={item.subtitle?.runs?.[0]?.text || item.subtitle?.text || "Unknown Artist"}
+                            primaryTypographyProps={{ fontWeight: 600, noWrap: true }}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
 
-            {/* Recommendations */}
-            <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-xl shadow-primary/5">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-                <div className="space-y-1">
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-green-500" />
-                    TuneTwins
-                  </CardTitle>
-                  <CardDescription>AI-powered musical matches</CardDescription>
-                </div>
-                <div className="px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-xs font-semibold">
-                  Recommended
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {getTrackItems(data.recommendations).map((item: any, index: number) => (
-                    <div 
-                      key={item.id || index} 
-                      className="group flex items-center justify-between p-3 rounded-xl hover:bg-accent/50 transition-all duration-200 border border-transparent hover:border-border/50"
-                    >
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-semibold truncate group-hover:text-primary transition-colors">
-                          {item.title?.runs?.[0]?.text || item.title?.text || item.title?.toString() || "Unknown Title"}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate italic">
-                          {item.short_byline?.runs?.[0]?.text || item.subtitle?.runs?.[0]?.text || "Unknown Artist"}
-                        </span>
-                      </div>
-                      <Button variant="ghost" size="icon" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <a 
-                          href={`https://music.youtube.com/watch?v=${item.videoId || item.id}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          title="Play on YouTube Music"
+              {/* Recommendations */}
+              <Grid item xs={12} md={6}>
+                <Card variant="outlined" sx={{ 
+                    bgcolor: 'background.paper', 
+                    borderColor: 'primary.main',
+                    boxShadow: '0 0 20px rgba(29, 185, 84, 0.1)'
+                }}>
+                  <CardHeader 
+                    title="TuneTwins" 
+                    subheader="AI-curated recommendations"
+                    avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><RecommendationIcon /></Avatar>}
+                    titleTypographyProps={{ fontWeight: 700 }}
+                    action={
+                        <Box sx={{ mt: 1, mr: 1, px: 1.5, py: 0.5, bgcolor: 'rgba(29,185,84,0.1)', color: 'primary.main', borderRadius: 10, fontSize: '0.75rem', fontWeight: 700 }}>
+                            RECOMMENDED
+                        </Box>
+                    }
+                  />
+                  <Divider sx={{ opacity: 0.1 }} />
+                  <CardContent sx={{ p: 0 }}>
+                    <List sx={{ maxHeight: 600, overflow: 'auto' }}>
+                      {getTrackItems(data.recommendations).map((item: any, index: number) => (
+                        <ListItem 
+                            key={item.id || index} 
+                            divider
+                            secondaryAction={
+                                <IconButton 
+                                    edge="end" 
+                                    component="a" 
+                                    href={`https://music.youtube.com/watch?v=${item.videoId || item.id}`} 
+                                    target="_blank"
+                                    sx={{ color: 'primary.main' }}
+                                >
+                                    <PlayIcon />
+                                </IconButton>
+                            }
                         >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  ))}
-                  {getTrackItems(data.recommendations).length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-                      <Info className="w-8 h-8 mb-2 opacity-20" />
-                      <p className="text-sm">No recommendations found for this playlist.</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
+                          <ListItemText 
+                            primary={item.title?.runs?.[0]?.text || item.title?.text || item.title?.toString() || "Unknown Title"}
+                            secondary={item.short_byline?.runs?.[0]?.text || item.subtitle?.runs?.[0]?.text || "Unknown Artist"}
+                            primaryTypographyProps={{ fontWeight: 600, noWrap: true, color: 'primary.main' }}
+                          />
+                        </ListItem>
+                      ))}
+                      {getTrackItems(data.recommendations).length === 0 && (
+                          <Box sx={{ p: 8, textAlign: 'center', color: 'text.secondary' }}>
+                              <Typography variant="body2">No recommendations found for this playlist.</Typography>
+                          </Box>
+                      )}
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          )}
+        </Container>
+      </Box>
 
-      <footer className="py-8 text-center text-xs text-muted-foreground opacity-50">
-        TuneTwin &copy; {new Date().getFullYear()} • Built with Bun, React 19 & Shadcn UI
-      </footer>
-    </div>
+      {/* Footer */}
+      <Box component="footer" sx={{ py: 4, textAlign: 'center', opacity: 0.5 }}>
+        <Typography variant="caption">
+          TuneTwin &copy; {new Date().getFullYear()} • Powered by Bun, React 19 & Material UI v7
+        </Typography>
+      </Box>
+    </ThemeProvider>
   );
 }
 
