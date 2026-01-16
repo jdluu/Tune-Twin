@@ -1,94 +1,36 @@
-# TuneTwin
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-TuneTwin is a music discovery application that generates algorithmic recommendations from YouTube Music playlists. Users can input a playlist URL and receive a curated list of similar tracks based on the playlist's musical profile.
+## Getting Started
 
-## Features
-
-- **Playlist Analysis**: Extracts track metadata including title, artist, album, and duration from YouTube Music playlists
-- **Algorithmic Recommendations**: Generates similar track suggestions using YouTube Music's recommendation engine
-- **Direct Playback Links**: Click any track title to open it directly in YouTube Music
-- **Responsive Design**: Fluid typography and spacing scales adapt to all screen sizes
-- **Light and Dark Themes**: Toggle between light and dark modes with a YouTube-inspired red accent
-
-## Technology Stack
-
-| Layer | Technology |
-|-------|------------|
-| Runtime | [Bun](https://bun.sh) |
-| Backend | Bun HTTP Server with native routing |
-| Frontend | React 19 with Material UI |
-| API | [youtubei.js](https://github.com/LuanRT/YouTube.js) (unofficial YouTube Music API) |
-
-## Requirements
-
-- [Bun](https://bun.sh) v1.1 or later
-
-## Installation
+First, run the development server:
 
 ```bash
-git clone https://github.com/jdluu/Tune-Twin.git
-cd Tune-Twin
-bun install
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Usage
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Development
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```bash
-bun run dev
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-The application will start at `http://localhost:3000` with hot module reloading enabled.
+## Learn More
 
-### Production
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-bun run build
-bun run start
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## How It Works
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-1. **Input**: Paste a YouTube Music playlist URL into the search field
-2. **Processing**: The backend extracts the playlist ID and fetches track metadata via the YouTube Music API
-3. **Recommendation**: The last track in the playlist is used as a seed to generate similar track suggestions
-4. **Display**: Both the original playlist and recommendations are displayed side by side with metadata and playback links
+## Deploy on Vercel
 
-## API Endpoints
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-### POST /api/process-playlist
-
-Processes a YouTube Music playlist and returns track data with recommendations.
-
-**Request Body:**
-```json
-{
-  "playlistId": "PLxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-```
-
-**Response:**
-```json
-{
-  "original": [
-    {
-      "id": "videoId",
-      "title": "Track Title",
-      "artist": "Artist Name",
-      "thumbnail": "https://...",
-      "duration": "3:45",
-      "album": "Album Name"
-    }
-  ],
-  "recommendations": [...]
-}
-```
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## Disclaimer
-
-YouTube Music is a trademark of Google LLC. This application is not affiliated with or endorsed by Google.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

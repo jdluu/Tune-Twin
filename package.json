@@ -1,25 +1,38 @@
 {
-  "name": "bun-react-template",
+  "name": "tune-twin",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
-    "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
-    "start": "NODE_ENV=production bun src/index.ts"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
-    "react": "^19",
-    "react-dom": "^19",
+    "@mui/material-nextjs": "^7.3.7",
+    "next": "16.1.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "youtubei.js": "^16.0.1"
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/node": "^20",
     "@types/react": "^19",
-    "@types/react-dom": "^19"
-  }
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.2",
+    "typescript": "^5"
+  },
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
 }
