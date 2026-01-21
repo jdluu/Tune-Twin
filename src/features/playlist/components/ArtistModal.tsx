@@ -13,7 +13,7 @@ import {
     Divider
 } from '@mui/material';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getArtistDetailsAction } from '../actions';
 
 interface ArtistModalProps {
@@ -34,26 +34,32 @@ export function ArtistModal({ artistId, artistName, open, onClose }: ArtistModal
     const [details, setDetails] = useState<ArtistDetails | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    const fetchArtistDetails = useCallback(async (id: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await getArtistDetailsAction(id);
+            if (res.success && res.data) {
+                setDetails(res.data);
+            } else {
+                setError(res.error || "Failed to load artist details.");
+            }
+        } catch {
+            setError("An unexpected error occurred.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
         if (open && artistId) {
-            setLoading(true);
-            setError(null);
-            getArtistDetailsAction(artistId)
-                .then(res => {
-                    if (res.success && res.data) {
-                        setDetails(res.data);
-                    } else {
-                        setError(res.error || "Failed to load artist details.");
-                    }
-                })
-                .catch(() => setError("An unexpected error occurred."))
-                .finally(() => setLoading(false));
+            fetchArtistDetails(artistId);
         } else if (!open) {
             // Reset state when closing
             setDetails(null);
             setError(null);
         }
-    }, [open, artistId]);
+    }, [open, artistId, fetchArtistDetails]);
 
     return (
         <Dialog 

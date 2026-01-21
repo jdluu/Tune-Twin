@@ -25,7 +25,7 @@ import type { PlaylistResult, Track } from "@/lib/types";
 import { useTheme } from "@mui/material/styles";
 
 import { motion } from "framer-motion";
-import { useState, useMemo, useEffect, Suspense, lazy } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import dynamic from "next/dynamic";
 
 const Player = dynamic(() => import("./Player").then(mod => mod.Player), { ssr: false });
@@ -44,25 +44,30 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
     const [recommendations, setRecommendations] = useState<Track[]>([]);
     const [loadingRecs, setLoadingRecs] = useState(false);
 
+    const fetchRecommendations = useCallback(async (tracks: Track[]) => {
+        setLoadingRecs(true);
+        // Pick up to 3 random seeds from original
+        const seedIds = tracks
+            .filter(t => t.id)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 3)
+            .map(t => t.id);
+
+        try {
+            const res = await getRecommendationsAction(seedIds);
+            if (res.success && res.data) {
+                setRecommendations(res.data.recommendations);
+            }
+        } finally {
+            setLoadingRecs(false);
+        }
+    }, []);
+
     useEffect(() => {
         if (data.original.length > 0) {
-            setLoadingRecs(true);
-            // Pick up to 3 random seeds from original
-            const seedIds = data.original
-                .filter(t => t.id)
-                .sort(() => 0.5 - Math.random())
-                .slice(0, 3)
-                .map(t => t.id);
-
-            getRecommendationsAction(seedIds)
-                .then(res => {
-                    if (res.success && res.data) {
-                        setRecommendations(res.data.recommendations);
-                    }
-                })
-                .finally(() => setLoadingRecs(false));
+            fetchRecommendations(data.original);
         }
-    }, [data.original]);
+    }, [data.original, fetchRecommendations]);
 
     const vibes = data.vibes || [];
 

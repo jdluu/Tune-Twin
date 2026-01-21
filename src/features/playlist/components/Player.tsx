@@ -1,9 +1,8 @@
 'use client';
 
 import YouTube, { YouTubeProps } from 'react-youtube';
-import { Box, IconButton, Paper, Typography, Slide, useTheme } from '@mui/material';
+import { Box, IconButton, Paper, Slide, useTheme } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { useEffect, useState } from 'react';
 
 interface PlayerProps {
     videoId: string | null;
@@ -12,15 +11,8 @@ interface PlayerProps {
 
 export function Player({ videoId, onClose }: PlayerProps) {
     const theme = useTheme();
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        if (videoId) {
-            setIsVisible(true);
-        } else {
-            setIsVisible(false);
-        }
-    }, [videoId]);
+    // Derive visibility directly from prop - no need for useState/useEffect
+    const isVisible = !!videoId;
 
     if (!videoId) return null;
 
