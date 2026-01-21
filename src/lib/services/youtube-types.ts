@@ -19,6 +19,17 @@ export interface YtText {
 export interface YtArtist {
     name: string;
     id?: string;
+    channel_id?: string;
+    channelId?: string;
+}
+
+export interface YtArtistResponse {
+    header?: {
+        title?: YtText;
+        description?: YtText;
+        thumbnails?: YtThumbnail[];
+    };
+    sections?: any[];
 }
 
 export interface YtMusicItem {

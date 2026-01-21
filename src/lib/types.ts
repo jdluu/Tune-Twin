@@ -1,16 +1,6 @@
-export interface Track {
-    id: string;
-    title: string;
-    artist: string;
-    album?: string;
-    duration?: string;
-    thumbnail?: string | null;
-}
+import { Track, PlaylistResult } from './validations';
 
-export interface PlaylistResult {
-    original: Track[];
-    recommendations: Track[];
-}
+export type { Track, PlaylistResult };
 
 export interface ActionResponse {
     success: boolean;
