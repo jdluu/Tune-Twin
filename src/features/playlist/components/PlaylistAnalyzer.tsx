@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useActionState } from "react";
 import { 
     Container, 
     Box, 
@@ -23,22 +23,25 @@ import {
 import { ResultsDisplay } from "./ResultsDisplay";
 import { useTheme } from "@mui/material/styles";
 import { processPlaylistAction } from "../actions";
-import type { PlaylistResult } from "@/lib/types";
+import type { PlaylistResult, ActionResponse } from "@/lib/types";
 
 export function PlaylistAnalyzer() {
   const [url, setUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<PlaylistResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  
+  const [state, formAction, isPending] = useActionState<ActionResponse | null, FormData>(
+    processPlaylistAction,
+    null
+  );
+
+  const data = state?.success ? state.data : null;
+  const error = !state?.success ? state?.error : null;
   
   const theme = useTheme();
   const mode = theme.palette.mode;
 
   const resetSearch = () => {
       setUrl("");
-      setError(null);
-      setData(null);
   };
 
   // Scroll to results when data is loaded
@@ -48,38 +51,7 @@ export function PlaylistAnalyzer() {
     }
   }, [data]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setData(null);
-
-    // Heuristic #5: Error Prevention
-    if (!url.includes("list=") && !url.includes("music.youtube.com")) {
-        // We allow loose URLs but warn if it looks totally wrong, keeping strict validation for the backend
-         if (!url.includes("list=")) {
-             setError("That doesn't look like a valid playlist URL. Please make sure it contains a 'list=' ID.");
-             setLoading(false);
-             return;
-         }
-    }
-
-    try {
-      const result = await processPlaylistAction(url);
-      
-      if (!result.success) {
-          throw new Error(result.error || "Failed to fetch playlist data.");
-      }
-
-      if (result.data) {
-          setData(result.data);
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Removed manual handleSubmit as we use formAction
 
   return (
         <Box sx={{ pt: 8, pb: 12 }}>
@@ -98,7 +70,7 @@ export function PlaylistAnalyzer() {
               </Typography>
 
               {/* Search Paper */}
-              <Paper elevation={0} component="form" onSubmit={handleSubmit} 
+              <Paper elevation={0} component="form" action={formAction} 
                     sx={{ 
                         p: '6px', 
                         display: 'flex', 
@@ -121,6 +93,7 @@ export function PlaylistAnalyzer() {
                 </Box>
                 <TextField
                   fullWidth
+                  name="url"
                   variant="standard"
                   placeholder="Paste YouTube Music playlist URL..."
                   value={url}
@@ -142,7 +115,7 @@ export function PlaylistAnalyzer() {
                 <Button 
                   type="submit" 
                   variant="contained" 
-                  disabled={loading}
+                  disabled={isPending}
                   sx={{ 
                       height: 48, 
                       px: 4,
@@ -159,7 +132,7 @@ export function PlaylistAnalyzer() {
                       }
                   }}
                 >
-                  {loading ? "Scanning..." : "Analyze"}
+                  {isPending ? "Scanning..." : "Analyze"}
                 </Button>
               </Paper>
             </Box>
@@ -173,7 +146,7 @@ export function PlaylistAnalyzer() {
             )}
 
             {/* Loading Skeletons */}
-            {loading && !data && (
+            {isPending && !data && (
               <Grid container spacing={4}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Skeleton variant="rounded" height={500} sx={{ borderRadius: 4 }} />
