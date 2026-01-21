@@ -35,6 +35,11 @@ const VIBE_KEYWORDS: Record<string, VibeTag> = {
     "2000s": { label: "2000s Era", color: "#3f51b5" }
 };
 
+// Escape special regex characters in a string
+function escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function analyzePlaylistVibe(tracks: Track[]): VibeTag[] {
     const counts: Record<string, number> = {};
     const textToAnalyze = tracks.map(t => 
@@ -42,7 +47,7 @@ export function analyzePlaylistVibe(tracks: Track[]): VibeTag[] {
     ).join(" ");
 
     Object.keys(VIBE_KEYWORDS).forEach(keyword => {
-        const regex = new RegExp(`\\b${keyword}\\b`, "gi");
+        const regex = new RegExp(`\\b${escapeRegex(keyword)}\\b`, "gi");
         const matches = textToAnalyze.match(regex);
         if (matches) {
             counts[keyword] = matches.length;
