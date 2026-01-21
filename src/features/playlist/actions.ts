@@ -1,12 +1,24 @@
 'use server';
 
 import { ActionResponse, Track } from '@/lib/types';
-import { getPlaylist, getRecommendations } from '@/lib/services/youtube';
+import { getPlaylist, getRecommendationsMulti, getArtistDetails } from '@/lib/services/youtube';
+import { PlaylistInputSchema, ArtistIdSchema } from '@/lib/validations';
+import { analyzePlaylistVibe } from '@/lib/services/vibe-engine';
+import { isRateLimited } from '@/lib/security/rate-limiter';
+import { logger } from '@/lib/logger';
+import { headers } from 'next/headers';
 
-export async function processPlaylistAction(playlistInput: string): Promise<ActionResponse> {
+export async function processPlaylistAction(prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse> {
     try {
-        if (!playlistInput) {
-            return { success: false, error: "Please enter a valid URL or ID." };
+        const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
+        if (isRateLimited(ip, { maxRequests: 5, windowMs: 60000 })) {
+            return { success: false, error: "Too many requests. Please try again in a minute." };
+        }
+
+        const playlistInput = formData.get('url') as string;
+        const validation = PlaylistInputSchema.safeParse(playlistInput);
+        if (!validation.success) {
+            return { success: false, error: validation.error.issues[0].message };
         }
 
         let playlistId = "";
@@ -49,34 +61,67 @@ export async function processPlaylistAction(playlistInput: string): Promise<Acti
             return { success: false, error: "Empty playlist or could not find tracks" };
         }
 
-        // Recommendation Logic
-        const lastTrack = tracks[tracks.length - 1];
-        const seedVideoId = lastTrack?.id;
-
-        if (!seedVideoId) {
-             return { success: false, error: "Could not identify seed track ID for recommendations" };
-        }
-
-        console.log(`Fetching recommendations based on seed ID: ${seedVideoId}`);
-        
-        let recommendations: Track[] = [];
-        try {
-            recommendations = await getRecommendations(seedVideoId);
-        } catch (e: any) {
-             console.error("Recommendation fetch failed", e);
-             // We can still return the original tracks even if recs fail
-        }
+        // Analysis Logic (Server Side)
+        const vibes = analyzePlaylistVibe(tracks);
 
         return {
             success: true,
             data: {
                 original: tracks,
-                recommendations: recommendations
+                recommendations: [],
+                vibes: vibes
             }
         };
 
     } catch (error: any) {
         console.error("Server Action Error:", error);
         return { success: false, error: error.message || "Internal Server Error" };
+    }
+}
+
+export async function getRecommendationsAction(seedIds: string[]): Promise<ActionResponse> {
+    try {
+        const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
+        if (isRateLimited(ip, { maxRequests: 20, windowMs: 60000 })) {
+            return { success: false, error: "Too many requests." };
+        }
+
+        if (!seedIds || seedIds.length === 0) {
+            return { success: false, error: "No seed tracks provided." };
+        }
+
+        logger.info({ msg: `Fetching recommendations`, seedIds, ip });
+        // Limit seed IDs to prevent abuse
+        const limitedSeeds = seedIds.slice(0, 5);
+        const recommendations = await getRecommendationsMulti(limitedSeeds);
+
+        return {
+            success: true,
+            data: {
+                original: [], // Not needed here
+                recommendations: recommendations
+            }
+        };
+    } catch (error: any) {
+        console.error("Recommendations Error:", error);
+        return { success: false, error: error.message || "Failed to fetch recommendations." };
+    }
+}
+
+export async function getArtistDetailsAction(artistId: string) {
+    try {
+        const validation = ArtistIdSchema.safeParse(artistId);
+        if (!validation.success) {
+            return { success: false, error: validation.error.issues[0].message };
+        }
+
+        const details = await getArtistDetails(artistId);
+        if (!details) {
+            return { success: false, error: "Could not find artist details." };
+        }
+        return { success: true, data: details };
+    } catch (error: any) {
+        console.error("Artist Details Error:", error);
+        return { success: false, error: error.message || "Failed to fetch artist details." };
     }
 }
