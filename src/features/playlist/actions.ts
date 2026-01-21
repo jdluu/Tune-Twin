@@ -1,6 +1,6 @@
 'use server';
 
-import { ActionResponse, Track } from '@/lib/types';
+import { ActionResponse } from '@/lib/types';
 import { getPlaylist, getRecommendationsMulti, getArtistDetails } from '@/lib/services/youtube';
 import { PlaylistInputSchema, ArtistIdSchema } from '@/lib/validations';
 import { analyzePlaylistVibe } from '@/lib/services/vibe-engine';
@@ -11,7 +11,7 @@ import { headers } from 'next/headers';
 export async function processPlaylistAction(prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse> {
     try {
         const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
-        if (isRateLimited(ip, { maxRequests: 5, windowMs: 60000 })) {
+        if (await isRateLimited(ip, { maxRequests: 5, windowMs: 60000 })) {
             return { success: false, error: "Too many requests. Please try again in a minute." };
         }
 
@@ -53,8 +53,9 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
         let tracks;
         try {
             tracks = await getPlaylist(playlistId);
-        } catch (e: any) {
-             return { success: false, error: `Could not fetch playlist: ${e.message || 'Unknown error'}` };
+        } catch (e: unknown) {
+             const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+             return { success: false, error: `Could not fetch playlist: ${errorMessage}` };
         }
 
         if (!tracks || tracks.length === 0) {
@@ -73,16 +74,17 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
             }
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Server Action Error:", error);
-        return { success: false, error: error.message || "Internal Server Error" };
+        const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
+        return { success: false, error: errorMessage };
     }
 }
 
 export async function getRecommendationsAction(seedIds: string[]): Promise<ActionResponse> {
     try {
         const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
-        if (isRateLimited(ip, { maxRequests: 20, windowMs: 60000 })) {
+        if (await isRateLimited(ip, { maxRequests: 20, windowMs: 60000 })) {
             return { success: false, error: "Too many requests." };
         }
 
@@ -102,9 +104,10 @@ export async function getRecommendationsAction(seedIds: string[]): Promise<Actio
                 recommendations: recommendations
             }
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Recommendations Error:", error);
-        return { success: false, error: error.message || "Failed to fetch recommendations." };
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch recommendations.';
+        return { success: false, error: errorMessage };
     }
 }
 
@@ -120,8 +123,9 @@ export async function getArtistDetailsAction(artistId: string) {
             return { success: false, error: "Could not find artist details." };
         }
         return { success: true, data: details };
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Artist Details Error:", error);
-        return { success: false, error: error.message || "Failed to fetch artist details." };
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch artist details.';
+        return { success: false, error: errorMessage };
     }
 }

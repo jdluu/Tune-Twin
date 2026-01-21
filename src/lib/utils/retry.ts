@@ -19,18 +19,19 @@ export async function withRetry<T>(
     } = options;
 
     let delay = initialDelay;
-    let lastError: any;
+    let lastError: unknown;
 
     for (let i = 0; i <= maxRetries; i++) {
         try {
             return await fn();
-        } catch (error: any) {
+        } catch (error: unknown) {
             lastError = error;
             if (i === maxRetries) break;
 
+            const errorMessage = error instanceof Error ? error.message : String(error);
             logger.warn({ 
                 msg: `Retry attempt ${i + 1}/${maxRetries} failed`, 
-                error: error.message,
+                error: errorMessage,
                 delay 
             });
 

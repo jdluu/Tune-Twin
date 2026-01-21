@@ -29,7 +29,7 @@ export interface YtArtistResponse {
         description?: YtText;
         thumbnails?: YtThumbnail[];
     };
-    sections?: any[];
+    sections?: unknown[];
 }
 
 export interface YtMusicItem {
