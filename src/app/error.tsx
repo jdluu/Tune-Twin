@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Box, Typography, Button, Container, Paper } from '@mui/material';
+import { Typography, Button, Container, Paper } from '@mui/material';
 import { ErrorOutline as ErrorIcon } from '@mui/icons-material';
 
 export default function Error({

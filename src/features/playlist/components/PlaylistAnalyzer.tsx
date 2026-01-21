@@ -23,7 +23,7 @@ import {
 import { ResultsDisplay } from "./ResultsDisplay";
 import { useTheme } from "@mui/material/styles";
 import { processPlaylistAction } from "../actions";
-import type { PlaylistResult, ActionResponse } from "@/lib/types";
+import type { ActionResponse } from "@/lib/types";
 
 export function PlaylistAnalyzer() {
   const [url, setUrl] = useState("");
@@ -63,7 +63,7 @@ export function PlaylistAnalyzer() {
                   mb: 3,
                   letterSpacing: '-1px'
               }}>
-                Discover your music's <span style={{ color: '#FF0000' }}>twin code</span>.
+                Discover your music&apos;s <span style={{ color: '#FF0000' }}>twin code</span>.
               </Typography>
               <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 650, mx: 'auto', mb: 6, lineHeight: 1.6 }}>
                 Unlock the algorithmic DNA of your playlists. Paste a YouTube Music link below to uncover hidden gems that match your vibe perfectly.

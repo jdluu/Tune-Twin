@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, createContext, useContext, useEffect } from 'react';
+import { useState, useMemo, createContext, useContext } from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { getTheme } from '@/lib/theme';
