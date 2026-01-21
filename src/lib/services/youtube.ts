@@ -7,7 +7,8 @@ import {
     YtText, 
     YtPlaylistResponse, 
     YtUpNextResponse,
-    YtThumbnail
+    YtThumbnail,
+    YtArtistResponse
 } from './youtube-types';
 import { logger } from '../logger';
 import { withRetry } from '../utils/retry';
@@ -75,7 +76,7 @@ const sanitizeTrack = (item: YtMusicItem): Track => {
     const validation = TrackSchema.safeParse(rawTrack);
     if (!validation.success) {
         logger.warn({ msg: "Malformed track data detected", error: validation.error.format(), rawTrack });
-        return null as any; // We'll filter this out
+        return null as unknown as Track; // We'll filter this out
     }
 
     return validation.data;
@@ -149,7 +150,7 @@ const _getRecommendations = async (seedVideoId: string): Promise<Track[]> => {
 const _getArtistDetails = async (artistId: string) => {
     const yt = await getYoutube();
     try {
-        const artist = await withRetry(() => yt.music.getArtist(artistId)) as any;
+        const artist = await withRetry(() => yt.music.getArtist(artistId)) as YtArtistResponse;
         return {
             name: getText(artist.header?.title) || "Unknown Artist",
             bio: getText(artist.header?.description) || "No biography available.",
@@ -161,9 +162,23 @@ const _getArtistDetails = async (artistId: string) => {
     }
 }
 
-export const getPlaylist = unstable_cache(_getPlaylist, ['get-playlist'], { revalidate: 300 });
-export const getRecommendations = unstable_cache(_getRecommendations, ['get-recommendations'], { revalidate: 300 });
-export const getArtistDetails = unstable_cache(_getArtistDetails, ['get-artist-details'], { revalidate: 300 });
+export const getPlaylist = (id: string) => unstable_cache(
+    () => _getPlaylist(id),
+    ['get-playlist', id],
+    { revalidate: 300 }
+)();
+
+export const getRecommendations = (id: string) => unstable_cache(
+    () => _getRecommendations(id),
+    ['get-recommendations', id],
+    { revalidate: 300 }
+)();
+
+export const getArtistDetails = (id: string) => unstable_cache(
+    () => _getArtistDetails(id),
+    ['get-artist-details', id],
+    { revalidate: 300 }
+)();
 
 export const getRecommendationsMulti = async (seedVideoIds: string[]): Promise<Track[]> => {
     const promises = seedVideoIds.map(id => getRecommendations(id));
