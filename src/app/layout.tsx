@@ -7,6 +7,14 @@ import './globals.css';
 export const metadata = {
   title: 'TuneTwin',
   description: 'Discover your music\'s twin code.',
+  manifest: '/manifest.json',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  themeColor: '#FF0000',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'TuneTwin',
+  },
 };
 
 export default function RootLayout({

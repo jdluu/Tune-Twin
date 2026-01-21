@@ -1,0 +1,16 @@
+{
+  "name": "Tune-Twin",
+  "short_name": "TuneTwin",
+  "description": "Discover your musical twin via YouTube playlists.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0F0F",
+  "theme_color": "#FF0000",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
