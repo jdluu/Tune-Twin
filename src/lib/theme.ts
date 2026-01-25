@@ -5,7 +5,7 @@ export const getTheme = (mode: 'light' | 'dark') => createTheme({
   palette: {
     mode,
     primary: {
-      main: '#FF0000', // YouTube Red
+      main: '#d32f2f', // Accessible Red (>4.5:1 contrast)
       contrastText: '#fff',
     },
     secondary: {
