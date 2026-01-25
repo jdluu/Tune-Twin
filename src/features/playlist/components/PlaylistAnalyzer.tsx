@@ -80,10 +80,10 @@ export function PlaylistAnalyzer() {
                   mb: 3,
                   letterSpacing: '-1px'
               }}>
-                Discover your music&apos;s <span style={{ color: '#FF0000' }}>twin code</span>.
+                Find your playlist&apos;s <span style={{ color: '#FF0000' }}>perfect matches</span>.
               </Typography>
               <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: 650, mx: 'auto', mb: 6, lineHeight: 1.6 }}>
-                Unlock the algorithmic DNA of your playlists. Paste a YouTube Music link below to uncover hidden gems that match your vibe perfectly.
+                Analyze any YouTube Music playlist to understand its vibe and discover new tracks that fit seamlessly with your current favorites.
               </Typography>
 
               {/* Search Paper */}
