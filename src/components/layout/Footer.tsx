@@ -44,7 +44,7 @@ export function Footer() {
               </Link>
 
               {/* Copyright */}
-              <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.7 }}>
+              <Typography variant="caption" color="text.secondary">
                 © {new Date().getFullYear()} TuneTwin. Not affiliated with Google or YouTube.
               </Typography>
             </Stack>

@@ -17,7 +17,7 @@ export const getTheme = (mode: 'light' | 'dark') => createTheme({
     },
     text: {
       primary: mode === 'dark' ? '#ffffff' : '#0f0f0f',
-      secondary: mode === 'dark' ? '#aaaaaa' : '#606060',
+      secondary: mode === 'dark' ? '#aaaaaa' : '#424242',
     },
     action: {
       hover: mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)',
