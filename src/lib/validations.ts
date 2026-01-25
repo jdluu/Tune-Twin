@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 // Track Schema
 export const TrackSchema = z.object({
-    id: z.string(),
-    title: z.string(),
+    id: z.string().min(1),
+    title: z.string().min(1),
     artist: z.string(),
     artistId: z.string().optional(),
     album: z.string().optional(),
