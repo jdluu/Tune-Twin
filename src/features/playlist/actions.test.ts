@@ -50,9 +50,10 @@ describe('processPlaylistAction', () => {
 
     it('should extract playlist ID from URL and call getPlaylist', async () => {
         vi.mocked(isRateLimited).mockResolvedValue(false);
-        vi.mocked(getPlaylist).mockResolvedValue([
-            { id: '1', title: 'Track 1', artist: 'Artist 1' },
-        ]);
+        vi.mocked(getPlaylist).mockResolvedValue({
+            tracks: [{ id: '1', title: 'Track 1', artist: 'Artist 1', thumbnail: 'thumb.jpg' }],
+            metadata: { id: 'PLtest12345', title: 'Test Playlist', trackCount: 1, thumbnail: 'thumb.jpg' }
+        });
 
         const formData = new FormData();
         formData.set('url', 'https://music.youtube.com/playlist?list=PLtest12345');
@@ -66,9 +67,10 @@ describe('processPlaylistAction', () => {
 
     it('should accept raw playlist IDs', async () => {
         vi.mocked(isRateLimited).mockResolvedValue(false);
-        vi.mocked(getPlaylist).mockResolvedValue([
-            { id: '1', title: 'Track 1', artist: 'Artist 1' },
-        ]);
+        vi.mocked(getPlaylist).mockResolvedValue({
+            tracks: [{ id: '1', title: 'Track 1', artist: 'Artist 1', thumbnail: 'thumb.jpg' }],
+            metadata: { id: 'PLtest12345678', title: 'Test Playlist', trackCount: 1, thumbnail: 'thumb.jpg' }
+        });
 
         const formData = new FormData();
         formData.set('url', 'PLtest12345678');
@@ -116,6 +118,7 @@ describe('getArtistDetailsAction', () => {
             name: 'Test Artist',
             bio: 'A bio',
             thumbnail: null,
+            topTracks: []
         });
 
         const result = await getArtistDetailsAction('UCvalid123');
