@@ -85,6 +85,9 @@ export const sanitizeTrack = (item: YtMusicItem): Track => {
 
 /**
  * Type Guard to check if a response is a valid playlist response.
+ *
+ * @param data - The unknown data to verify.
+ * @returns True if the data matches the playlist response structure.
  */
 export function isValidPlaylistResponse(data: unknown): data is YtPlaylistResponse {
     return (
@@ -97,6 +100,9 @@ export function isValidPlaylistResponse(data: unknown): data is YtPlaylistRespon
 
 /**
  * Type Guard to check if a response is a valid UpNext/Recommendation response.
+ *
+ * @param data - The unknown data to verify.
+ * @returns True if the data matches the UpNext response structure.
  */
 export function isValidUpNextResponse(data: unknown): data is YtUpNextResponse {
     if (typeof data !== 'object' || data === null) return false;
