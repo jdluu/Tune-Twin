@@ -17,6 +17,7 @@ export type Track = z.infer<typeof TrackSchema>;
 export const VibeTagSchema = z.object({
   label: z.string(),
   color: z.string(),
+  score: z.number().optional(), // Normalized 0-1 or count
 });
 
 export type VibeTag = z.infer<typeof VibeTagSchema>;
@@ -26,6 +27,12 @@ export const PlaylistResultSchema = z.object({
     original: z.array(TrackSchema),
     recommendations: z.array(TrackSchema),
     vibes: z.array(VibeTagSchema).optional(),
+    metadata: z.object({
+        id: z.string(),
+        title: z.string(),
+        trackCount: z.number(),
+        thumbnail: z.string().nullable().optional(),
+    }).optional(),
 });
 
 export type PlaylistResult = z.infer<typeof PlaylistResultSchema>;

@@ -10,16 +10,27 @@ import {
     Box, 
     CircularProgress, 
     Avatar,
-    Divider
+    Divider,
+    List,
+    ListItem,
+    ListItemText
 } from '@mui/material';
 import Image from 'next/image';
 import { useEffect, useState, useCallback } from 'react';
 import { getArtistDetailsAction } from '../actions';
+import { Track } from '@/lib/types';
 
+/**
+ * Props for the ArtistModal component.
+ */
 interface ArtistModalProps {
+    /** The ID of the artist to fetch details for. */
     artistId: string | null;
+    /** The name of the artist (used for title until details load). */
     artistName: string | null;
+    /** Whether the modal is open. */
     open: boolean;
+    /** Callback to close the modal. */
     onClose: () => void;
 }
 
@@ -27,8 +38,15 @@ interface ArtistDetails {
     name: string;
     bio: string;
     thumbnail?: string | null;
+    topTracks?: Track[];
 }
 
+/**
+ * Modal component to display detailed artist information (Bio, Top Tracks).
+ * Fetches data on-demand when opened.
+ *
+ * @param props - ArtistModalProps
+ */
 export function ArtistModal({ artistId, artistName, open, onClose }: ArtistModalProps) {
     const [loading, setLoading] = useState(false);
     const [details, setDetails] = useState<ArtistDetails | null>(null);
@@ -95,9 +113,36 @@ export function ArtistModal({ artistId, artistName, open, onClose }: ArtistModal
                     <Typography color="error" align="center">{error}</Typography>
                 ) : details ? (
                     <Box>
-                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, mb: 3 }}>
                             {details.bio}
                         </Typography>
+
+                        {details.topTracks && details.topTracks.length > 0 && (
+                            <>
+                                <Typography variant="h6" gutterBottom sx={{ fontWeight: 700 }}>
+                                    Top Songs
+                                </Typography>
+                                <List disablePadding>
+                                    {details.topTracks.map((track, idx) => (
+                                        <ListItem key={track.id || idx} disablePadding sx={{ py: 1 }}>
+                                            <ListItemText 
+                                                primary={track.title}
+                                                secondary={track.album}
+                                                primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
+                                                secondaryTypographyProps={{ variant: 'caption' }}
+                                            />
+                                            {track.thumbnail && (
+                                                <Avatar 
+                                                    src={track.thumbnail} 
+                                                    variant="rounded" 
+                                                    sx={{ width: 40, height: 40, ml: 2 }}
+                                                />
+                                            )}
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </>
+                        )}
                     </Box>
                 ) : (
                     <Typography variant="body2" color="text.secondary" align="center">

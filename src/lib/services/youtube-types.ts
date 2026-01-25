@@ -23,13 +23,19 @@ export interface YtArtist {
     channelId?: string;
 }
 
+export interface YtSection {
+    title?: YtText | string;
+    items?: YtMusicItem[];
+    contents?: YtMusicItem[];
+}
+
 export interface YtArtistResponse {
     header?: {
         title?: YtText;
         description?: YtText;
         thumbnails?: YtThumbnail[];
     };
-    sections?: unknown[];
+    sections?: YtSection[];
 }
 
 export interface YtMusicItem {
@@ -58,6 +64,11 @@ export interface YtMusicItem {
 
 export interface YtPlaylistResponse {
     items?: YtMusicItem[];
+    header?: {
+        title?: YtText;
+        description?: YtText;
+    };
+    title?: string; // Sometimes directly on the object
 }
 
 export interface YtUpNextResponse {

@@ -8,6 +8,14 @@ import { isRateLimited } from '@/lib/security/rate-limiter';
 import { logger } from '@/lib/logger';
 import { headers } from 'next/headers';
 
+/**
+ * Server Action to process a YouTube playlist URL or ID.
+ * Validates input, fetches playlist data, and performs vibe analysis.
+ *
+ * @param prevState - The previous state of the form (for useActionState).
+ * @param formData - The form data containing the 'url' field.
+ * @returns The result of the operation, including tracks, metadata, and vibe analysis.
+ */
 export async function processPlaylistAction(prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse> {
     try {
         const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
@@ -51,8 +59,11 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
         console.log(`Fetching YouTube playlist: ${playlistId}`);
 
         let tracks;
+        let metadata;
         try {
-            tracks = await getPlaylist(playlistId);
+            const result = await getPlaylist(playlistId);
+            tracks = result.tracks;
+            metadata = result.metadata;
         } catch (e: unknown) {
              const errorMessage = e instanceof Error ? e.message : 'Unknown error';
              return { success: false, error: `Could not fetch playlist: ${errorMessage}` };
@@ -70,7 +81,8 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
             data: {
                 original: tracks,
                 recommendations: [],
-                vibes: vibes
+                vibes: vibes,
+                metadata: metadata
             }
         };
 
@@ -81,6 +93,12 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
     }
 }
 
+/**
+ * Server Action to fetch recommendations based on seed track IDs.
+ *
+ * @param seedIds - Array of YouTube Video IDs to use as seeds.
+ * @returns An ActionResponse containing the recommended tracks.
+ */
 export async function getRecommendationsAction(seedIds: string[]): Promise<ActionResponse> {
     try {
         const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
@@ -111,6 +129,12 @@ export async function getRecommendationsAction(seedIds: string[]): Promise<Actio
     }
 }
 
+/**
+ * Server Action to fetch detailed information about an artist.
+ *
+ * @param artistId - The YouTube Artist Channel ID (e.g., UC...).
+ * @returns An ActionResponse containing the artist details (bio, top tracks, etc.).
+ */
 export async function getArtistDetailsAction(artistId: string) {
     try {
         const validation = ArtistIdSchema.safeParse(artistId);

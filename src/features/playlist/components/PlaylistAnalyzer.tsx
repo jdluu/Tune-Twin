@@ -13,7 +13,8 @@ import {
     Alert,
     Fade,
     Skeleton,
-    Grid
+    Grid,
+    Chip
 } from "@mui/material";
 import { 
     Search as SearchIcon, 
@@ -25,6 +26,11 @@ import { useTheme } from "@mui/material/styles";
 import { processPlaylistAction } from "../actions";
 import type { ActionResponse } from "@/lib/types";
 
+/**
+ * Main feature component for analyzing playlists.
+ * Handles the input form, server action submission, and displays results.
+ * Manages "Recent Searches" history in localStorage.
+ */
 export function PlaylistAnalyzer() {
   const [url, setUrl] = useState("");
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -50,6 +56,41 @@ export function PlaylistAnalyzer() {
         resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [data]);
+
+    // History Logic
+    const [history, setHistory] = useState<{id: string, title: string, timestamp: number}[]>([]);
+
+    useEffect(() => {
+        const stored = localStorage.getItem('tune_twin_history');
+        if (stored) {
+            try {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
+                setHistory(JSON.parse(stored));
+            } catch (e) {
+                console.error("Failed to parse history", e);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (data && data.metadata) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setHistory(prev => {
+                const newEntry = { 
+                    id: data.metadata!.id, 
+                    title: data.metadata!.title, 
+                    timestamp: Date.now() 
+                };
+                
+                // Remove duplicates (by ID) and keep top 5
+                const filtered = prev.filter(h => h.id !== newEntry.id);
+                const updated = [newEntry, ...filtered].slice(0, 5);
+                
+                localStorage.setItem('tune_twin_history', JSON.stringify(updated));
+                return updated;
+            });
+        }
+    }, [data]);
 
   // Removed manual handleSubmit as we use formAction
 
@@ -135,6 +176,32 @@ export function PlaylistAnalyzer() {
                   {isPending ? "Scanning..." : "Analyze"}
                 </Button>
               </Paper>
+
+              {/* Recent Searches */}
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 1 }}>
+                  {history.length > 0 && (
+                      <Typography variant="caption" sx={{ color: 'text.secondary', width: '100%', mb: 0.5 }}>
+                          Recent Searches:
+                      </Typography>
+                  )}
+                  {history.map((item) => (
+                      <Chip 
+                          key={item.id}
+                          label={item.title}
+                          size="small"
+                          onClick={() => {
+                              setUrl(`https://music.youtube.com/playlist?list=${item.id}`);
+                              // Optional: auto-submit or just fill
+                          }}
+                          onDelete={() => {
+                              const newHistory = history.filter(h => h.id !== item.id);
+                              setHistory(newHistory);
+                              localStorage.setItem('tune_twin_history', JSON.stringify(newHistory));
+                          }}
+                          sx={{ maxWidth: 200 }}
+                      />
+                  ))}
+              </Box>
             </Box>
 
             {error && (

@@ -30,13 +30,20 @@ import dynamic from "next/dynamic";
 
 const Player = dynamic(() => import("./Player").then(mod => mod.Player), { ssr: false });
 const ArtistModal = dynamic(() => import("./ArtistModal").then(mod => mod.ArtistModal), { ssr: false });
-import { Chip, Skeleton } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { getRecommendationsAction } from "../actions";
+import { VibeVisualizer } from "./VibeVisualizer";
 
 interface ResultsDisplayProps {
     data: PlaylistResult;
 }
 
+/**
+ * Component to display the analysis results.
+ * Shows original playlist, extracted vibes, and fetches/displays recommendations.
+ *
+ * @param props - ResultsDisplayProps containing the playlist data.
+ */
 export function ResultsDisplay({ data }: ResultsDisplayProps) {
     const theme = useTheme();
     const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
@@ -100,23 +107,7 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
                 titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
                 />
                 
-                {vibes.length > 0 && (
-                    <Box sx={{ px: 2, pb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                        {vibes.map((tag, idx: number) => (
-                            <Chip 
-                                key={idx} 
-                                label={tag.label} 
-                                size="small" 
-                                sx={{ 
-                                    bgcolor: tag.color, 
-                                    color: '#fff',
-                                    fontWeight: 600,
-                                    fontSize: '0.7rem'
-                                }} 
-                            />
-                        ))}
-                    </Box>
-                )}
+                <VibeVisualizer vibes={vibes} />
 
                 <Divider />
                 <CardContent sx={{ p: 0, flexGrow: 1 }}>
