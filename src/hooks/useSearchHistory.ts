@@ -9,6 +9,12 @@ export interface HistoryItem {
 const STORAGE_KEY = 'tune_twin_history';
 const MAX_HISTORY = 5;
 
+/**
+ * Custom hook to manage search history in local storage.
+ * Handles loading, adding, and removing history items.
+ *
+ * @returns Object containing history state and action handlers.
+ */
 export function useSearchHistory() {
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);

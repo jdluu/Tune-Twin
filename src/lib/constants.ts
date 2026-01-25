@@ -1,5 +1,9 @@
 import { VibeTag } from "./types";
 
+/**
+ * Dictionary of vibe keywords mapping to display labels and colors.
+ * Used for analyzing playlist titles and metadata.
+ */
 export const VIBE_KEYWORDS: Record<string, VibeTag> = {
     // Genres
     "lofi": { label: "Chill & Lofi", color: "#9c27b0" },

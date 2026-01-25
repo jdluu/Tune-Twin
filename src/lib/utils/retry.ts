@@ -7,6 +7,14 @@ interface RetryOptions {
     factor?: number;
 }
 
+/**
+ * Executes a function with exponential backoff retry logic.
+ *
+ * @param fn - The async function to execute.
+ * @param options - Configuration options for retries.
+ * @returns The result of the function execution.
+ * @throws The last error encountered if all retries fail.
+ */
 export async function withRetry<T>(
     fn: () => Promise<T>,
     options: RetryOptions = {}
