@@ -211,7 +211,7 @@ const _getArtistDetails = async (artistId: string) => {
  */
 export const getPlaylist = (id: string) => unstable_cache(
     () => _getPlaylist(id),
-    ['get-playlist', id],
+    ['get-playlist', id, 'playlist'],
     { revalidate: 300 }
 )();
 
