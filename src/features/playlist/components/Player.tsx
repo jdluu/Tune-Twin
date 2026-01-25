@@ -49,7 +49,11 @@ export function Player({ videoId, onClose }: PlayerProps) {
                     <Box sx={{ flexGrow: 1, overflow: 'hidden', borderRadius: 2 }}>
                          <YouTube videoId={videoId} opts={opts} onEnd={onClose} />
                     </Box>
-                    <IconButton onClick={onClose} sx={{ position: 'absolute', top: -40, right: 0, bgcolor: 'background.paper', boxShadow: 2 }}>
+                    <IconButton 
+                        onClick={onClose} 
+                        aria-label="Close player"
+                        sx={{ position: 'absolute', top: -40, right: 0, bgcolor: 'background.paper', boxShadow: 2 }}
+                    >
                         <CloseIcon />
                     </IconButton>
                 </Box>

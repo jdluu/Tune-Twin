@@ -56,7 +56,7 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
              return { success: false, error: "Invalid Playlist URL or ID format." };
         }
 
-        console.log(`Fetching YouTube playlist: ${playlistId}`);
+        // logger.info(`Fetching YouTube playlist: ${playlistId}`);
 
         let tracks;
         let metadata;

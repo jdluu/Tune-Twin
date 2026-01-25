@@ -85,11 +85,13 @@ export function ArtistModal({ artistId, artistName, open, onClose }: ArtistModal
             onClose={onClose} 
             maxWidth="sm" 
             fullWidth
+            aria-labelledby="artist-modal-title"
+            aria-describedby="artist-modal-description"
             PaperProps={{
                 sx: { borderRadius: 3, p: 1 }
             }}
         >
-            <DialogTitle sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <DialogTitle id="artist-modal-title" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 2 }}>
                 {details?.thumbnail && (
                     <Avatar sx={{ width: 48, height: 48, position: 'relative' }}>
                         <Image 
@@ -113,7 +115,7 @@ export function ArtistModal({ artistId, artistName, open, onClose }: ArtistModal
                     <Typography color="error" align="center">{error}</Typography>
                 ) : details ? (
                     <Box>
-                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, mb: 3 }}>
+                        <Typography id="artist-modal-description" variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.7, mb: 3 }}>
                             {details.bio}
                         </Typography>
 

@@ -1,20 +1,14 @@
 import { Innertube } from 'youtubei.js';
 import { Track, PlaylistMetadata } from '@/lib/types';
-import { TrackSchema } from '@/lib/validations';
 import { unstable_cache } from 'next/cache';
 import { 
     YtMusicItem, 
-    YtText, 
-    YtPlaylistResponse, 
-    YtUpNextResponse,
-    YtThumbnail,
     YtArtistResponse
 } from './youtube-types';
 import { logger } from '../logger';
 import { withRetry } from '../utils/retry';
 import { 
     getText, 
-    getThumbnail, 
     sanitizeTrack, 
     isValidPlaylistResponse, 
     isValidUpNextResponse 
