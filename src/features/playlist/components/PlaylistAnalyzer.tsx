@@ -25,6 +25,7 @@ import { ResultsDisplay } from "./ResultsDisplay";
 import { useTheme } from "@mui/material/styles";
 import { processPlaylistAction } from "../actions";
 import type { ActionResponse } from "@/lib/types";
+import { useSearchHistory } from "@/hooks/useSearchHistory";
 
 /**
  * Main feature component for analyzing playlists.
@@ -50,6 +51,8 @@ export function PlaylistAnalyzer() {
       setUrl("");
   };
 
+  const { history, addToHistory, removeFromHistory } = useSearchHistory();
+
   // Scroll to results when data is loaded
   useEffect(() => {
     if (data && resultsRef.current) {
@@ -57,42 +60,15 @@ export function PlaylistAnalyzer() {
     }
   }, [data]);
 
-    // History Logic
-    const [history, setHistory] = useState<{id: string, title: string, timestamp: number}[]>([]);
-
-    useEffect(() => {
-        const stored = localStorage.getItem('tune_twin_history');
-        if (stored) {
-            try {
-                // eslint-disable-next-line react-hooks/set-state-in-effect
-                setHistory(JSON.parse(stored));
-            } catch (e) {
-                console.error("Failed to parse history", e);
-            }
-        }
-    }, []);
-
+    // Update history when data is received
     useEffect(() => {
         if (data && data.metadata) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setHistory(prev => {
-                const newEntry = { 
-                    id: data.metadata!.id, 
-                    title: data.metadata!.title, 
-                    timestamp: Date.now() 
-                };
-                
-                // Remove duplicates (by ID) and keep top 5
-                const filtered = prev.filter(h => h.id !== newEntry.id);
-                const updated = [newEntry, ...filtered].slice(0, 5);
-                
-                localStorage.setItem('tune_twin_history', JSON.stringify(updated));
-                return updated;
+            addToHistory({
+                id: data.metadata.id,
+                title: data.metadata.title
             });
         }
-    }, [data]);
-
-  // Removed manual handleSubmit as we use formAction
+    }, [data, addToHistory]);
 
   return (
         <Box sx={{ pt: 8, pb: 12 }}>
@@ -193,11 +169,7 @@ export function PlaylistAnalyzer() {
                               setUrl(`https://music.youtube.com/playlist?list=${item.id}`);
                               // Optional: auto-submit or just fill
                           }}
-                          onDelete={() => {
-                              const newHistory = history.filter(h => h.id !== item.id);
-                              setHistory(newHistory);
-                              localStorage.setItem('tune_twin_history', JSON.stringify(newHistory));
-                          }}
+                          onDelete={() => removeFromHistory(item.id)}
                           sx={{ maxWidth: 200 }}
                       />
                   ))}
