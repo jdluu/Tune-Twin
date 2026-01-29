@@ -25,14 +25,27 @@ import { Track } from "@/lib/types";
 import { useTheme } from "@mui/material/styles";
 
 interface RecommendationsListProps {
+    /** Array of recommendation tracks to display. */
     recommendations: Track[];
+    /** Whether recommendations are currently being fetched. */
     loading: boolean;
+    /** ID of the currently playing video, used to highlight the active track. */
     playingVideoId: string | null;
+    /** Callback to play a specific track. */
     onPlay: (id: string) => void;
+    /** Callback to play all recommended tracks in sequence. */
+    onPlayAll: () => void;
+    /** Callback to handle artist selection for modal details. */
     onSelectArtist: (id: string, name: string) => void;
 }
 
-export function RecommendationsList({ recommendations, loading, playingVideoId, onPlay, onSelectArtist }: RecommendationsListProps) {
+/**
+ * Displays a list of recommended tracks based on the analysis.
+ * Features a "Play All" button and individual track controls.
+ *
+ * @param props - Component properties.
+ */
+export function RecommendationsList({ recommendations, loading, playingVideoId, onPlay, onPlayAll, onSelectArtist }: RecommendationsListProps) {
     const theme = useTheme();
 
     const container = {
@@ -61,6 +74,13 @@ export function RecommendationsList({ recommendations, loading, playingVideoId, 
                 title="Twin Matches" 
                 subheader="Algorithmic suggestions"
                 avatar={<Avatar sx={{ bgcolor: 'primary.main' }}><EqualizerIcon /></Avatar>}
+                action={
+                    recommendations.length > 0 && (
+                        <IconButton onClick={onPlayAll} color="primary" title="Play All">
+                            <PlayIcon />
+                        </IconButton>
+                    )
+                }
                 titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
             />
             <Divider sx={{ borderColor: 'rgba(255,0,0,0.1)' }} />

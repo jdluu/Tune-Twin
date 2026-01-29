@@ -22,14 +22,27 @@ import { Track, VibeTag } from "@/lib/types";
 import { VibeVisualizer } from "./VibeVisualizer";
 
 interface ResultsListProps {
+    /** Array of original tracks from the user's playlist. */
     tracks: Track[];
+    /** Extracted VibeTags associated with the playlist. */
     vibes: VibeTag[];
+    /** ID of the currently playing video, used to highlight the active track. */
     playingVideoId: string | null;
+    /** Callback to play a specific track. */
     onPlay: (id: string) => void;
+    /** Callback to play all original tracks in sequence. */
+    onPlayAll: () => void;
+    /** Callback to handle artist selection for modal details. */
     onSelectArtist: (id: string, name: string) => void;
 }
 
-export function ResultsList({ tracks, vibes, playingVideoId, onPlay, onSelectArtist }: ResultsListProps) {
+/**
+ * Displays the original source playlist and its associated vibes.
+ * Features a "Play All" button and individual track controls.
+ *
+ * @param props - Component properties.
+ */
+export function ResultsList({ tracks, vibes, playingVideoId, onPlay, onPlayAll, onSelectArtist }: ResultsListProps) {
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -49,6 +62,13 @@ export function ResultsList({ tracks, vibes, playingVideoId, onPlay, onSelectArt
                 title="Source Playlist" 
                 subheader={`${tracks.length} tracks found`}
                 avatar={<Avatar sx={{ bgcolor: 'transparent', color: 'text.primary' }}><MusicIcon /></Avatar>}
+                action={
+                    tracks.length > 0 && (
+                        <IconButton onClick={onPlayAll} color="primary" title="Play All">
+                            <PlayIcon />
+                        </IconButton>
+                    )
+                }
                 titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
             />
             

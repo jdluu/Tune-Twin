@@ -99,7 +99,7 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
  * @param seedIds - Array of YouTube Video IDs to use as seeds.
  * @returns An ActionResponse containing the recommended tracks.
  */
-export async function getRecommendationsAction(seedIds: string[]): Promise<ActionResponse> {
+export async function getRecommendationsAction(seedIds: string[], excludeIds: string[] = []): Promise<ActionResponse> {
     try {
         const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
         if (await isRateLimited(ip, { maxRequests: 20, windowMs: 60000 })) {
@@ -115,11 +115,16 @@ export async function getRecommendationsAction(seedIds: string[]): Promise<Actio
         const limitedSeeds = seedIds.slice(0, 5);
         const recommendations = await getRecommendationsMulti(limitedSeeds);
 
+        // Filter out tracks that are already in the playlist (excludeIds)
+        // Using a Set for O(1) lookup performance
+        const excludeSet = new Set(excludeIds);
+        const filteredRecommendations = recommendations.filter(track => !excludeSet.has(track.id));
+
         return {
             success: true,
             data: {
                 original: [], // Not needed here
-                recommendations: recommendations
+                recommendations: filteredRecommendations
             }
         };
     } catch (error: unknown) {

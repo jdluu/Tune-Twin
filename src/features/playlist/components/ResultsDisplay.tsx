@@ -11,6 +11,7 @@ const ArtistModal = dynamic(() => import("./ArtistModal").then(mod => mod.Artist
 import { getRecommendationsAction } from "../actions";
 import { ResultsList } from "./ResultsList";
 import { RecommendationsList } from "./RecommendationsList";
+import { usePlayerQueue } from "../hooks/usePlayerQueue";
 
 interface ResultsDisplayProps {
     data: PlaylistResult;
@@ -23,7 +24,7 @@ interface ResultsDisplayProps {
  * @param props - ResultsDisplayProps containing the playlist data.
  */
 export function ResultsDisplay({ data }: ResultsDisplayProps) {
-    const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+    const { playingVideoId, playlistQueue, playTrack, playQueue, closePlayer } = usePlayerQueue();
     const [selectedArtist, setSelectedArtist] = useState<{ id: string; name: string } | null>(null);
     const [recommendations, setRecommendations] = useState<Track[]>([]);
     const [loadingRecs, setLoadingRecs] = useState(false);
@@ -38,7 +39,9 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
             .map(t => t.id);
 
         try {
-            const res = await getRecommendationsAction(seedIds);
+            // Collect all current track IDs to exclude from recommendations
+            const excludeIds = tracks.map(t => t.id).filter(id => !!id);
+            const res = await getRecommendationsAction(seedIds, excludeIds);
             if (res.success && res.data) {
                 setRecommendations(res.data.recommendations);
             }
@@ -55,7 +58,18 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
 
     const vibes = data.vibes || [];
 
-    const handlePlay = (id: string) => setPlayingVideoId(id);
+    const handlePlayAllRecommendations = () => {
+        if (recommendations.length > 0) {
+            playQueue(recommendations[0].id, recommendations.slice(1).map(t => t.id));
+        }
+    };
+
+    const handlePlayAllSource = () => {
+        if (data.original.length > 0) {
+            playQueue(data.original[0].id, data.original.slice(1).map(t => t.id));
+        }
+    };
+
     const handleSelectArtist = (id: string, name: string) => setSelectedArtist({ id, name });
 
     return (
@@ -67,7 +81,8 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
                             tracks={data.original} 
                             vibes={vibes} 
                             playingVideoId={playingVideoId} 
-                            onPlay={handlePlay} 
+                            onPlay={playTrack} 
+                            onPlayAll={handlePlayAllSource}
                             onSelectArtist={handleSelectArtist}
                         />
                     </Grid>
@@ -77,7 +92,8 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
                             recommendations={recommendations} 
                             loading={loadingRecs} 
                             playingVideoId={playingVideoId} 
-                            onPlay={handlePlay} 
+                            onPlay={playTrack} 
+                            onPlayAll={handlePlayAllRecommendations}
                             onSelectArtist={handleSelectArtist}
                         />
                     </Grid>
@@ -85,7 +101,11 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
             </Fade>
 
             <Suspense fallback={null}>
-                <Player videoId={playingVideoId} onClose={() => setPlayingVideoId(null)} />
+                <Player 
+                    videoId={playingVideoId} 
+                    playlist={playlistQueue}
+                    onClose={closePlayer} 
+                />
                 <ArtistModal 
                     artistId={selectedArtist?.id || null} 
                     artistName={selectedArtist?.name || null} 

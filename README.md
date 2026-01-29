@@ -83,21 +83,19 @@ bun start
 
 The project follows a **Feature-Sliced Design (Lite)** approach:
 
-```
-src/
-├── app/                 # Next.js App Router (Routes & Layouts)
-├── components/          # Shared UI Components (Providers, Layouts)
-├── features/            # Feature-based modules
-│   └── playlist/        # Playlist Analysis Feature
-│       ├── components/  # Feature-specific components
-│       ├── actions.ts   # Server Actions
-│       └── ...
-├── hooks/               # Custom React Hooks
-├── lib/                 # Core Utilities & Services
-│   ├── services/        # API Services
-│   ├── theme.ts         # Design Tokens
-│   └── types.ts         # Shared Types
-└── test/                # Test setup and utilities
+```mermaid
+graph TD
+    Client[Client Browser] <--> NextApp[Next.js App Router]
+    NextApp -- "Server Actions" --> Features[Feature Modules]
+    Features -- "Service Calls" --> Lib[Lib / Services]
+    Lib -- "Caching (unstable_cache)" --> DataCache
+    Lib -- "YouTubei.js" --> YouTubeAPI[YouTube Music API]
+    
+    subgraph "Core Layout"
+        Providers --> Navbar
+        Navbar --> PageContent
+        PageContent --> Footer
+    end
 ```
 
 ## License

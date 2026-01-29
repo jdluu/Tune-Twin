@@ -5,11 +5,21 @@ import { Box, IconButton, Paper, Slide, useTheme } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 
 interface PlayerProps {
+    /** The YouTube video ID to play. If null, the player is hidden. */
     videoId: string | null;
+    /** Optional array of video IDs to play after the current video. */
+    playlist?: string[];
+    /** Callback function to handle the closing of the player or end of playback. */
     onClose: () => void;
 }
 
-export function Player({ videoId, onClose }: PlayerProps) {
+/**
+ * A floating YouTube player component.
+ * Supports single video playback and playlist queues.
+ *
+ * @param props - Player configuration properties.
+ */
+export function Player({ videoId, playlist, onClose }: PlayerProps) {
     const theme = useTheme();
     // Derive visibility directly from prop - no need for useState/useEffect
     const isVisible = !!videoId;
@@ -23,6 +33,7 @@ export function Player({ videoId, onClose }: PlayerProps) {
             // https://developers.google.com/youtube/player_parameters
             autoplay: 1,
             modestbranding: 1,
+            playlist: playlist?.join(','), 
         },
     };
 

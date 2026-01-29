@@ -103,6 +103,24 @@ describe('getRecommendationsAction', () => {
         
         expect(getRecommendationsMulti).toHaveBeenCalledWith(['1', '2', '3', '4', '5']);
     });
+    it('should filter out excluded IDs', async () => {
+        vi.mocked(isRateLimited).mockResolvedValue(false);
+        vi.mocked(getRecommendationsMulti).mockResolvedValue([
+            { id: '1', title: 'Track 1', artist: 'Artist 1', thumbnail: 't1.jpg' },
+            { id: '2', title: 'Track 2', artist: 'Artist 2', thumbnail: 't2.jpg' },
+            { id: '3', title: 'Track 3', artist: 'Artist 3', thumbnail: 't3.jpg' }
+        ]);
+
+        const seedIds = ['10'];
+        const excludeIds = ['2']; // We want to exclude Track 2
+        
+        const result = await getRecommendationsAction(seedIds, excludeIds);
+        
+        expect(result.success).toBe(true);
+        expect(result.data?.recommendations).toHaveLength(2);
+        expect(result.data?.recommendations.find(t => t.id === '2')).toBeUndefined();
+        expect(result.data?.recommendations.find(t => t.id === '1')).toBeDefined();
+    });
 });
 
 describe('getArtistDetailsAction', () => {
