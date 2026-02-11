@@ -1,2 +1,12 @@
-[serve.static]
-env = "BUN_PUBLIC_*"
+
+[install]
+cache = true
+lockfile = true
+
+[test]
+preload = ["./src/test/preload.ts"]
+
+[run]
+# Performance optimizations for bun run
+# Set a custom shell if needed, or other runtime flags
+enable_jit = true
