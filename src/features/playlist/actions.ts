@@ -1,22 +1,24 @@
 'use server';
 
-import { ActionResponse } from '@/lib/types';
+import type { ActionResponse } from '@/lib/types';
 import { getPlaylist, getRecommendationsMulti, getArtistDetails } from '@/lib/services/youtube';
 import { PlaylistInputSchema, ArtistIdSchema } from '@/lib/validations';
-import { analyzePlaylistVibe } from '@/lib/services/vibe-engine';
+import { analyzePlaylistVibe } from '@/lib/services/analysis-engine';
 import { isRateLimited } from '@/lib/security/rate-limiter';
 import { logger } from '@/lib/logger';
 import { headers } from 'next/headers';
+
+import { parsePlaylistId } from '@/lib/services/youtube-helpers';
 
 /**
  * Server Action to process a YouTube playlist URL or ID.
  * Validates input, fetches playlist data, and performs vibe analysis.
  *
- * @param prevState - The previous state of the form (for useActionState).
+ * @param _prevState - The previous state of the form (for useActionState).
  * @param formData - The form data containing the 'url' field.
  * @returns The result of the operation, including tracks, metadata, and vibe analysis.
  */
-export async function processPlaylistAction(prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse> {
+export async function processPlaylistAction(_prevState: ActionResponse | null, formData: FormData): Promise<ActionResponse> {
     try {
         const ip = (await headers()).get('x-forwarded-for') || 'anonymous';
         if (await isRateLimited(ip, { maxRequests: 5, windowMs: 60000 })) {
@@ -29,29 +31,7 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
             return { success: false, error: validation.error.issues[0].message };
         }
 
-        let playlistId = "";
-
-        // 1. Try parsing as a URL
-        try {
-            const urlObj = new URL(playlistInput);
-            const listParam = urlObj.searchParams.get("list");
-            if (listParam) {
-                playlistId = listParam;
-            }
-        } catch {
-            // Not a valid URL, treat as raw ID candidate
-        }
-
-        // 2. If not a URL, check if the input itself looks like an ID
-        if (!playlistId) {
-            // YouTube IDs are generally alphanumeric with dashes/underscores
-            // Playlists usually start with PL, OLAK5e..., RD...
-            // We use a loose check: at least 10 chars, safe characters
-            if (/^[a-zA-Z0-9\-_]{10,}$/.test(playlistInput)) {
-                playlistId = playlistInput;
-            }
-        }
-
+        const playlistId = parsePlaylistId(playlistInput);
         if (!playlistId) {
              return { success: false, error: "Invalid Playlist URL or ID format." };
         }
@@ -74,14 +54,15 @@ export async function processPlaylistAction(prevState: ActionResponse | null, fo
         }
 
         // Analysis Logic (Server Side)
-        const vibes = analyzePlaylistVibe(tracks);
+        const { analysis, vibeTags } = analyzePlaylistVibe(tracks);
 
         return {
             success: true,
             data: {
                 original: tracks,
                 recommendations: [],
-                vibes: vibes,
+                vibes: vibeTags,
+                analysis: analysis,
                 metadata: metadata
             }
         };

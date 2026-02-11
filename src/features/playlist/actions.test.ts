@@ -1,20 +1,20 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, mock, beforeEach } from 'bun:test';
 
 // Mock dependencies before importing the module under test
-vi.mock('@/lib/services/youtube', () => ({
-    getPlaylist: vi.fn(),
-    getRecommendationsMulti: vi.fn(),
-    getArtistDetails: vi.fn(),
+mock.module('@/lib/services/youtube', () => ({
+    getPlaylist: mock(() => Promise.resolve({ tracks: [], metadata: {} })),
+    getRecommendationsMulti: mock(() => Promise.resolve([])),
+    getArtistDetails: mock(() => Promise.resolve({})),
 }));
 
-vi.mock('@/lib/security/rate-limiter', () => ({
-    isRateLimited: vi.fn(() => Promise.resolve(false)),
+mock.module('@/lib/security/rate-limiter', () => ({
+    isRateLimited: mock(() => Promise.resolve(false)),
 }));
 
-vi.mock('next/headers', () => ({
-    headers: () => Promise.resolve({
+mock.module('next/headers', () => ({
+    headers: mock(() => Promise.resolve({
         get: () => '127.0.0.1',
-    }),
+    })),
 }));
 
 import { processPlaylistAction, getRecommendationsAction, getArtistDetailsAction } from './actions';
@@ -23,7 +23,8 @@ import { isRateLimited } from '@/lib/security/rate-limiter';
 
 describe('processPlaylistAction', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        (isRateLimited as any).mockClear();
+        (getPlaylist as any).mockClear();
     });
 
     it('should return error for invalid URL format', async () => {
@@ -37,7 +38,7 @@ describe('processPlaylistAction', () => {
     });
 
     it('should return error when rate limited', async () => {
-        vi.mocked(isRateLimited).mockResolvedValue(true);
+        (isRateLimited as any).mockImplementation(() => Promise.resolve(true));
         
         const formData = new FormData();
         formData.set('url', 'https://music.youtube.com/playlist?list=PLsomethingvalid');
@@ -49,11 +50,11 @@ describe('processPlaylistAction', () => {
     });
 
     it('should extract playlist ID from URL and call getPlaylist', async () => {
-        vi.mocked(isRateLimited).mockResolvedValue(false);
-        vi.mocked(getPlaylist).mockResolvedValue({
+        (isRateLimited as any).mockImplementation(() => Promise.resolve(false));
+        (getPlaylist as any).mockImplementation(() => Promise.resolve({
             tracks: [{ id: '1', title: 'Track 1', artist: 'Artist 1', thumbnail: 'thumb.jpg' }],
             metadata: { id: 'PLtest12345', title: 'Test Playlist', trackCount: 1, thumbnail: 'thumb.jpg' }
-        });
+        }));
 
         const formData = new FormData();
         formData.set('url', 'https://music.youtube.com/playlist?list=PLtest12345');
@@ -66,11 +67,11 @@ describe('processPlaylistAction', () => {
     });
 
     it('should accept raw playlist IDs', async () => {
-        vi.mocked(isRateLimited).mockResolvedValue(false);
-        vi.mocked(getPlaylist).mockResolvedValue({
+        (isRateLimited as any).mockImplementation(() => Promise.resolve(false));
+        (getPlaylist as any).mockImplementation(() => Promise.resolve({
             tracks: [{ id: '1', title: 'Track 1', artist: 'Artist 1', thumbnail: 'thumb.jpg' }],
             metadata: { id: 'PLtest12345678', title: 'Test Playlist', trackCount: 1, thumbnail: 'thumb.jpg' }
-        });
+        }));
 
         const formData = new FormData();
         formData.set('url', 'PLtest12345678');
@@ -84,7 +85,8 @@ describe('processPlaylistAction', () => {
 
 describe('getRecommendationsAction', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        (isRateLimited as any).mockClear();
+        (getRecommendationsMulti as any).mockClear();
     });
 
     it('should return error for empty seed IDs', async () => {
@@ -95,8 +97,8 @@ describe('getRecommendationsAction', () => {
     });
 
     it('should limit seed IDs to 5', async () => {
-        vi.mocked(isRateLimited).mockResolvedValue(false);
-        vi.mocked(getRecommendationsMulti).mockResolvedValue([]);
+        (isRateLimited as any).mockImplementation(() => Promise.resolve(false));
+        (getRecommendationsMulti as any).mockImplementation(() => Promise.resolve([]));
 
         const seedIds = ['1', '2', '3', '4', '5', '6', '7'];
         await getRecommendationsAction(seedIds);
@@ -104,12 +106,12 @@ describe('getRecommendationsAction', () => {
         expect(getRecommendationsMulti).toHaveBeenCalledWith(['1', '2', '3', '4', '5']);
     });
     it('should filter out excluded IDs', async () => {
-        vi.mocked(isRateLimited).mockResolvedValue(false);
-        vi.mocked(getRecommendationsMulti).mockResolvedValue([
+        (isRateLimited as any).mockImplementation(() => Promise.resolve(false));
+        (getRecommendationsMulti as any).mockImplementation(() => Promise.resolve([
             { id: '1', title: 'Track 1', artist: 'Artist 1', thumbnail: 't1.jpg' },
             { id: '2', title: 'Track 2', artist: 'Artist 2', thumbnail: 't2.jpg' },
             { id: '3', title: 'Track 3', artist: 'Artist 3', thumbnail: 't3.jpg' }
-        ]);
+        ]));
 
         const seedIds = ['10'];
         const excludeIds = ['2']; // We want to exclude Track 2
@@ -132,12 +134,12 @@ describe('getArtistDetailsAction', () => {
     });
 
     it('should call getArtistDetails with valid ID', async () => {
-        vi.mocked(getArtistDetails).mockResolvedValue({
+        (getArtistDetails as any).mockImplementation(() => Promise.resolve({
             name: 'Test Artist',
             bio: 'A bio',
             thumbnail: null,
             topTracks: []
-        });
+        }));
 
         const result = await getArtistDetailsAction('UCvalid123');
         
