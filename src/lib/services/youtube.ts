@@ -1,7 +1,7 @@
 import { Innertube } from 'youtubei.js';
-import { Track, PlaylistMetadata } from '@/lib/types';
+import type { Track, PlaylistMetadata } from '@/lib/types';
 import { unstable_cache } from 'next/cache';
-import { 
+import type { 
     YtMusicItem, 
     YtArtistResponse
 } from './youtube-types';
@@ -64,7 +64,7 @@ const _getPlaylist = async (playlistId: string): Promise<{ tracks: Track[], meta
     };
 }
 
-const _getRecommendations = async (seedVideoId: string): Promise<Track[]> => {
+export const _getRecommendations = async (seedVideoId: string): Promise<Track[]> => {
     const yt = await getYoutube();
     const upNext = await withRetry(() => yt.music.getUpNext(seedVideoId));
 
@@ -77,6 +77,7 @@ const _getRecommendations = async (seedVideoId: string): Promise<Track[]> => {
 
     // Recommendations can be in .items or .contents
     const recItemsRaw = upNext.items || upNext.contents || [];
+    logger.info({ msg: "Fetched recommendations", seedVideoId, count: recItemsRaw.length });
 
     return recItemsRaw
         .filter((item) => {
@@ -138,29 +139,15 @@ export const getPlaylist = (id: string) => unstable_cache(
     { revalidate: 300 }
 )();
 
-/**
- * Fetches "Up Next" recommendations for a specific video ID.
- * Cached for 5 minutes.
- *
- * @param id - The seed Video ID.
- * @returns A list of recommended tracks.
- */
 export const getRecommendations = (id: string) => unstable_cache(
     () => _getRecommendations(id),
-    ['get-recommendations', id],
+    ['get-recommendations-v2', id],
     { revalidate: 300 }
 )();
 
-/**
- * Fetches artist details including bio, thumbnail, and top songs.
- * Cached for 5 minutes.
- *
- * @param id - The Artist ID (e.g., UC...).
- * @returns The artist details object or null if not found.
- */
 export const getArtistDetails = (id: string) => unstable_cache(
     () => _getArtistDetails(id),
-    ['get-artist-details', id],
+    ['get-artist-details-v2', id],
     { revalidate: 300 }
 )();
 

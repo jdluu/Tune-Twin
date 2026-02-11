@@ -1,7 +1,7 @@
-import { Track } from '@/lib/types';
+import type { Track } from '@/lib/types';
 import { TrackSchema } from '@/lib/validations';
 import { logger } from '../logger';
-import { 
+import type { 
     YtMusicItem, 
     YtText, 
     YtThumbnail, 
@@ -109,4 +109,33 @@ export function isValidUpNextResponse(data: unknown): data is YtUpNextResponse {
     const asType = data as YtUpNextResponse;
     // It should have either items or contents (or both, or empty arrays)
     return Array.isArray(asType.items) || Array.isArray(asType.contents);
+}
+
+/**
+ * Parses a YouTube playlist ID from a URL or a raw string.
+ * Supports various YouTube URL formats.
+ * 
+ * @param input - The URL or raw ID candidate.
+ * @returns The parsed playlist ID or null if invalid.
+ */
+export function parsePlaylistId(input: string): string | null {
+    if (!input) return null;
+
+    // 1. Try parsing as a URL
+    try {
+        const urlObj = new URL(input);
+        const listParam = urlObj.searchParams.get("list");
+        if (listParam) return listParam;
+    } catch {
+        // Not a URL
+    }
+
+    // 2. Check if the input itself looks like an ID
+    // YouTube IDs are generally Alphanumeric with dashes/underscores
+    // Playlists usually start with PL, OLAK5e..., RD... (>= 10 chars)
+    if (/^[a-zA-Z0-9\-_]{10,}$/.test(input)) {
+        return input;
+    }
+
+    return null;
 }
