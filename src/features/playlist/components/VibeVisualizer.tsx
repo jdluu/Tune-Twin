@@ -2,7 +2,7 @@
 
 import { Box, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-import { VibeTag } from "@/lib/types";
+import type { VibeTag } from "@/lib/types";
 
 interface VibeVisualizerProps {
     /** List of calculated vibe tags with scores. */

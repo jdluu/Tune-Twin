@@ -18,7 +18,7 @@ import {
     PlayArrow as PlayIcon 
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
-import { Track, VibeTag } from "@/lib/types";
+import type { Track, VibeTag } from "@/lib/types";
 import { VibeVisualizer } from "./VibeVisualizer";
 
 interface ResultsListProps {

@@ -1,5 +1,5 @@
 'use client';
-import { Grid, Fade } from "@mui/material";
+import { Grid, Fade, Box } from "@mui/material";
 import type { PlaylistResult, Track } from "@/lib/types";
 
 import { useState, useEffect, Suspense, useCallback } from "react";
@@ -12,6 +12,8 @@ import { getRecommendationsAction } from "../actions";
 import { ResultsList } from "./ResultsList";
 import { RecommendationsList } from "./RecommendationsList";
 import { usePlayerQueue } from "../hooks/usePlayerQueue";
+import { CohesionMeter } from "./CohesionMeter";
+import { OutlierAlert } from "./OutlierAlert";
 
 interface ResultsDisplayProps {
     data: PlaylistResult;
@@ -75,29 +77,42 @@ export function ResultsDisplay({ data }: ResultsDisplayProps) {
     return (
         <>
             <Fade in={true} timeout={600}>
-                <Grid container spacing={4}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <ResultsList 
-                            tracks={data.original} 
-                            vibes={vibes} 
-                            playingVideoId={playingVideoId} 
-                            onPlay={playTrack} 
-                            onPlayAll={handlePlayAllSource}
-                            onSelectArtist={handleSelectArtist}
-                        />
+            <Fade in={true} timeout={600}>
+                <Box>
+                    {data.analysis && (
+                        <Fade in={true} timeout={800}>
+                            <Box>
+                                <CohesionMeter analysis={data.analysis} />
+                                <OutlierAlert analysis={data.analysis} />
+                            </Box>
+                        </Fade>
+                    )}
+                    
+                    <Grid container spacing={4}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <ResultsList 
+                                tracks={data.original} 
+                                vibes={vibes} 
+                                playingVideoId={playingVideoId} 
+                                onPlay={playTrack} 
+                                onPlayAll={handlePlayAllSource}
+                                onSelectArtist={handleSelectArtist}
+                            />
+                        </Grid>
+    
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <RecommendationsList 
+                                recommendations={recommendations} 
+                                loading={loadingRecs} 
+                                playingVideoId={playingVideoId} 
+                                onPlay={playTrack} 
+                                onPlayAll={handlePlayAllRecommendations}
+                                onSelectArtist={handleSelectArtist}
+                            />
+                        </Grid>
                     </Grid>
-
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <RecommendationsList 
-                            recommendations={recommendations} 
-                            loading={loadingRecs} 
-                            playingVideoId={playingVideoId} 
-                            onPlay={playTrack} 
-                            onPlayAll={handlePlayAllRecommendations}
-                            onSelectArtist={handleSelectArtist}
-                        />
-                    </Grid>
-                </Grid>
+                </Box>
+            </Fade>
             </Fade>
 
             <Suspense fallback={null}>

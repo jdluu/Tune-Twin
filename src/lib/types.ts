@@ -1,6 +1,30 @@
-import { Track, PlaylistResult, VibeTag } from './validations';
+import type { Track, PlaylistResult as BasePlaylistResult, VibeTag } from './validations';
 
-export type { Track, PlaylistResult, VibeTag };
+/**
+ * Represents a track's position in the 3D Vibe Space.
+ * All values are normalized between 0.0 and 1.0.
+ */
+export interface VibeVector {
+    energy: number;
+    mood: number;
+    dance: number;
+}
+
+export interface PlaylistAnalysis {
+    cohesionScore: number; // 0-100
+    details: {
+        text: string;
+        color: string;
+    };
+    dominantVibes: VibeVector; // The centroid
+    outliers: Track[];
+}
+
+export interface PlaylistResult extends BasePlaylistResult {
+    analysis?: PlaylistAnalysis;
+}
+
+export type { Track, VibeTag };
 
 /**
  * Metadata associated with a YouTube playlist.

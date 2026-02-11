@@ -20,8 +20,7 @@ import {
     Equalizer as EqualizerIcon, 
     PlayArrow as PlayIcon 
 } from "@mui/icons-material";
-import { motion } from "framer-motion";
-import { Track } from "@/lib/types";
+import type { Track } from "@/lib/types";
 import { useTheme } from "@mui/material/styles";
 
 interface RecommendationsListProps {
@@ -48,19 +47,6 @@ interface RecommendationsListProps {
 export function RecommendationsList({ recommendations, loading, playingVideoId, onPlay, onPlayAll, onSelectArtist }: RecommendationsListProps) {
     const theme = useTheme();
 
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: { staggerChildren: 0.05 }
-        }
-    };
-
-    const itemAnim = {
-        hidden: { opacity: 0, y: 10 },
-        show: { opacity: 1, y: 0 }
-    };
-
     return (
         <Card elevation={0} sx={{ 
             bgcolor: theme.palette.mode === 'dark' ? '#1a0000' : '#fff5f5', // Subtle red tint
@@ -85,7 +71,7 @@ export function RecommendationsList({ recommendations, loading, playingVideoId, 
             />
             <Divider sx={{ borderColor: 'rgba(255,0,0,0.1)' }} />
             <CardContent sx={{ p: 0, flexGrow: 1 }}>
-                <List sx={{ maxHeight: 600, overflow: 'auto' }} component={motion.ul} variants={container} initial="hidden" animate="show">
+                <List sx={{ maxHeight: 600, overflow: 'auto' }}>
                     {loading ? (
                         Array.from(new Array(5)).map((_, index) => (
                             <ListItem key={index} divider sx={{ borderColor: 'rgba(255,0,0,0.1)' }}>
@@ -100,91 +86,13 @@ export function RecommendationsList({ recommendations, loading, playingVideoId, 
                         ))
                     ) : (
                         recommendations.map((item: Track, index: number) => (
-                        <ListItem 
-                            key={item.id || index} 
-                            divider 
-                            sx={{ borderColor: 'rgba(255,0,0,0.1)' }}
-                            component={motion.li} 
-                            variants={itemAnim}
-                            secondaryAction={
-                                <IconButton 
-                                    edge="end" 
-                                    onClick={() => onPlay(item.id)}
-                                    aria-label={`Play ${item.title || "song"}`}
-                                    sx={{ 
-                                        color: playingVideoId === item.id ? 'primary.main' : 'text.primary',
-                                        '&:hover': { color: 'primary.main' }
-                                    }}
-                                >
-                                    <PlayIcon />
-                                </IconButton>
-                            }
-                        >
-                            <Box sx={{ 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                alignItems: 'center', 
-                                mr: 2,
-                                minWidth: 40
-                                }}>
-                                {item.thumbnail && (
-                                <Box sx={{ width: 40, height: 40, position: 'relative', borderRadius: 1.5, overflow: 'hidden' }}>
-                                    <Image 
-                                        src={item.thumbnail} 
-                                        alt={item.title || "Album Art"}
-                                        fill
-                                        sizes="40px"
-                                        style={{ objectFit: 'cover' }}
-                                    />
-                                </Box>
-                            )}
-                            </Box>
-                            <ListItemText 
-                                primary={
-                                    <Link 
-                                    href={`https://music.youtube.com/watch?v=${item.id}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    color="inherit"
-                                    underline="hover"
-                                    sx={{ 
-                                        fontWeight: 600, 
-                                        display: 'block',
-                                        cursor: 'pointer',
-                                        '&:hover': { color: 'primary.main' }
-                                    }}
-                                    >
-                                    {item.title || "Unknown Discovery"}
-                                    </Link>
-                                }
-                                secondary={
-                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
-                                        <Link 
-                                            component="button"
-                                            onClick={() => item.artistId && onSelectArtist(item.artistId, item.artist)}
-                                            sx={{ 
-                                                color: 'inherit', 
-                                                textDecoration: 'none', 
-                                                '&:hover': { color: 'inherit', textDecoration: 'underline' },
-                                                cursor: item.artistId ? 'pointer' : 'default',
-                                                fontSize: 'inherit',
-                                                textAlign: 'left'
-                                            }}
-                                        >
-                                            {item.artist || "TuneTwin Suggestion"}
-                                        </Link>
-                                        {item.album && (
-                                        <>
-                                            <span>•</span>
-                                            <span>{item.album}</span>
-                                        </>
-                                        )}
-                                    </span>
-                                }
-                                primaryTypographyProps={{ component: 'div' }}
-                                secondaryTypographyProps={{ noWrap: true, variant: 'caption', component: 'div' }}
+                            <RecommendationItem 
+                                key={item.id || index}
+                                item={item}
+                                playingVideoId={playingVideoId}
+                                onPlay={onPlay}
+                                onSelectArtist={onSelectArtist}
                             />
-                        </ListItem>
                         ))
                     )}
                     {!loading && recommendations.length === 0 && (
@@ -203,5 +111,105 @@ export function RecommendationsList({ recommendations, loading, playingVideoId, 
                 </List>
             </CardContent>
         </Card>
+    );
+}
+
+/**
+ * Individual recommendation item component.
+ */
+function RecommendationItem({ 
+    item, 
+    playingVideoId, 
+    onPlay, 
+    onSelectArtist 
+}: { 
+    item: Track; 
+    playingVideoId: string | null; 
+    onPlay: (id: string) => void; 
+    onSelectArtist: (id: string, name: string) => void;
+}) {
+    return (
+        <ListItem 
+            divider 
+            sx={{ borderColor: 'rgba(255,0,0,0.1)' }}
+            secondaryAction={
+                <IconButton 
+                    edge="end" 
+                    onClick={() => onPlay(item.id)}
+                    aria-label={`Play ${item.title || "song"}`}
+                    sx={{ 
+                        color: playingVideoId === item.id ? 'primary.main' : 'text.primary',
+                        '&:hover': { color: 'primary.main' }
+                    }}
+                >
+                    <PlayIcon />
+                </IconButton>
+            }
+        >
+            <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                mr: 2,
+                minWidth: 40
+            }}>
+                {item.thumbnail && (
+                    <Box sx={{ width: 40, height: 40, position: 'relative', borderRadius: 1.5, overflow: 'hidden' }}>
+                        <Image 
+                            src={item.thumbnail} 
+                            alt={item.title || "Album Art"}
+                            fill
+                            sizes="40px"
+                            style={{ objectFit: 'cover' }}
+                        />
+                    </Box>
+                )}
+            </Box>
+            <ListItemText 
+                primary={
+                    <Link 
+                        href={`https://music.youtube.com/watch?v=${item.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        color="inherit"
+                        underline="hover"
+                        sx={{ 
+                            fontWeight: 600, 
+                            display: 'block',
+                            cursor: 'pointer',
+                            '&:hover': { color: 'primary.main' }
+                        }}
+                    >
+                        {item.title || "Unknown Discovery"}
+                    </Link>
+                }
+                secondary={
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                        <Link 
+                            component="button"
+                            onClick={() => item.artistId && onSelectArtist(item.artistId, item.artist)}
+                            sx={{ 
+                                color: 'inherit', 
+                                textDecoration: 'none', 
+                                '&:hover': { color: 'inherit', textDecoration: 'underline' },
+                                cursor: item.artistId ? 'pointer' : 'default',
+                                fontSize: 'inherit',
+                                textAlign: 'left'
+                            }}
+                        >
+                            {item.artist || "TuneTwin Suggestion"}
+                        </Link>
+                        {item.album && (
+                            <>
+                                <span>•</span>
+                                <span>{item.album}</span>
+                            </>
+                        )}
+                    </span>
+                }
+                primaryTypographyProps={{ component: 'div' }}
+                secondaryTypographyProps={{ noWrap: true, variant: 'caption', component: 'div' }}
+            />
+        </ListItem>
     );
 }

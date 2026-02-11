@@ -18,7 +18,7 @@ import {
 import Image from 'next/image';
 import { useEffect, useState, useCallback } from 'react';
 import { getArtistDetailsAction } from '../actions';
-import { Track } from '@/lib/types';
+import type { Track } from '@/lib/types';
 
 /**
  * Props for the ArtistModal component.

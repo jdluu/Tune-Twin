@@ -1,6 +1,7 @@
 'use client';
 
-import YouTube, { YouTubeProps } from 'react-youtube';
+import YouTube from 'react-youtube';
+import type { YouTubeProps } from 'react-youtube';
 import { Box, IconButton, Paper, Slide, useTheme } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 
