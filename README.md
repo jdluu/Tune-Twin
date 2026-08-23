@@ -1,5 +1,8 @@
 # TuneTwin
 
+
+![{name} screenshot]({img})
+
 ![CI](https://github.com/jdluu/Tune-Twin/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
